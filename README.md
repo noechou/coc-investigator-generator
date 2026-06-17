@@ -6,7 +6,24 @@
 
 ## 在线体验
 
-本项目已被部署到 GitHub Pages。访客可以直接在浏览器中使用；若有需要，也可以下载仓库后打开 `index.html` 或按下方方式本地运行。
+**[立即在线使用 COC 7版调查员生成器](https://noechou.github.io/coc-investigator-generator/)**
+
+本项目适合部署到 GitHub Pages。部署完成后，访客可以直接在浏览器中使用；未部署时，也可以下载仓库后打开 `index.html` 或按下方方式本地运行。
+
+## 预览
+
+![首页快速生成界面](assets/readme-home.png)
+
+![属性生成结果](assets/readme-results.png)
+
+![完整角色卡与打印预览](assets/readme-sheet.png)
+
+## 适合谁用
+
+- 临时需要快速车卡的 COC 玩家。
+- 不熟悉技能分配的新玩家。
+- 需要批量生成 NPC 或备选调查员的 KP。
+- 想根据一句人物背景快速生成调查员雏形的人。
 
 ## 功能特性
 
@@ -47,13 +64,13 @@
 默认模型为：
 
 ```text
-deepseek-v4-flash · 思考深度 MEDIUM
+deepseek-v4-flash · 深度思考 MEDIUM
 ```
 
 AI 区域角落有一行低调的“切换模型”。点击后会切换到：
 
 ```text
-deepseek-v4-pro · 思考深度 MAX
+deepseek-v4-pro · 深度思考 MAX
 ```
 
 再次点击可切回 Flash。Flash 更适合快速生成；Pro 更适合复杂背景或希望更稳的推理时使用。
@@ -104,6 +121,33 @@ scripts/start-server.cmd 8080
 
 如需在局域网内访问，可自行绑定 `0.0.0.0` 并确认防火墙和网络安全设置。`scripts/optional/allow-firewall.cmd` 仅供确实需要局域网访问时手动使用，不是正常运行所必需。
 
+## GitHub Pages 部署
+
+推荐把本目录下的文件作为仓库根目录上传：
+
+```text
+index.html
+app.js
+styles.css
+print.html
+print.js
+print.css
+assets/
+scripts/
+README.md
+LICENSE
+```
+
+然后在 GitHub 仓库中开启 Pages：
+
+1. 进入仓库的 `Settings`。
+2. 打开 `Pages`。
+3. Source 选择 `Deploy from a branch`。
+4. Branch 选择 `main`，目录选择 `/root`。
+5. 保存后等待 GitHub Pages 生成访问地址。
+
+如果你不想把静态网页放在仓库根目录，也可以把站点文件放进 `docs/`，然后在 Pages 设置中选择 `/docs`。
+
 ## 项目结构
 
 ```text
@@ -116,7 +160,10 @@ scripts/start-server.cmd 8080
 ├─ print.css
 ├─ assets/
 │  ├─ coc-archive-desk.png
-│  └─ default-investigator-portrait.jpg
+│  ├─ default-investigator-portrait.jpg
+│  ├─ readme-home.png
+│  ├─ readme-results.png
+│  └─ readme-sheet.png
 ├─ scripts/
 │  ├─ start-server.cmd
 │  └─ optional/

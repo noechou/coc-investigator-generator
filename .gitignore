@@ -1,0 +1,27 @@
+# Local data
+*.local.json
+*.backup
+*.bak
+*.log
+*.tmp
+*.temp
+
+# API keys / env
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Dependency/build folders if the project later adds tooling
+node_modules/
+dist/
+build/
+.cache/
+
+# Editor folders
+.vscode/
+.idea/
