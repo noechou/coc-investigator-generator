@@ -4,11 +4,11 @@
 
 本项目无需后端服务，下载后可以直接打开，也可以部署到 GitHub Pages、Netlify、Vercel 等静态托管平台。
 
-## 在线体验
+## demo体验
 
 **[立即在线使用 COC 7版调查员生成器](https://noechou.github.io/coc-investigator-generator/)**
 
-本项目适合部署到 GitHub Pages。部署完成后，访客可以直接在浏览器中使用；未部署时，也可以下载仓库后打开 `index.html` 或按下方方式本地运行。
+本项目现已部署到 GitHub Pages。部署完成后，访客可以直接在浏览器中使用；未部署时，也可以下载仓库后打开 `index.html` 或按下方方式本地运行。
 
 ## 预览
 
