@@ -28,16 +28,27 @@ const DEFAULT_PORTRAIT = "assets/default-investigator-portrait.jpg";
 const AI_MODEL_MODES = {
   flash: {
     model: "deepseek-v4-flash",
-    reasoningEffort: "medium",
-    effortLabel: "MEDIUM",
+    reasoningEffort: "high",
+    effortLabel: "HIGH",
   },
   pro: {
     model: "deepseek-v4-pro",
-    reasoningEffort: "high",
+    reasoningEffort: "max",
     effortLabel: "MAX",
   },
 };
 let aiModelMode = "flash";
+
+const AGE_RULES = [
+  { min: 15, max: 19, label: "15–19 岁", physicalKeys: ["str", "siz"], physicalDeduction: 5, eduPenalty: 5, eduChecks: 0, appDeduction: 0, luckReroll: true },
+  { min: 20, max: 29, label: "20–29 岁", physicalKeys: [], physicalDeduction: 0, eduPenalty: 0, eduChecks: 1, appDeduction: 0, luckReroll: false },
+  { min: 30, max: 39, label: "30–39 岁", physicalKeys: [], physicalDeduction: 0, eduPenalty: 0, eduChecks: 2, appDeduction: 0, luckReroll: false },
+  { min: 40, max: 49, label: "40–49 岁", physicalKeys: ["str", "con", "dex"], physicalDeduction: 5, eduPenalty: 0, eduChecks: 3, appDeduction: 5, luckReroll: false },
+  { min: 50, max: 59, label: "50–59 岁", physicalKeys: ["str", "con", "dex"], physicalDeduction: 10, eduPenalty: 0, eduChecks: 4, appDeduction: 10, luckReroll: false },
+  { min: 60, max: 69, label: "60–69 岁", physicalKeys: ["str", "con", "dex"], physicalDeduction: 20, eduPenalty: 0, eduChecks: 4, appDeduction: 15, luckReroll: false },
+  { min: 70, max: 79, label: "70–79 岁", physicalKeys: ["str", "con", "dex"], physicalDeduction: 40, eduPenalty: 0, eduChecks: 4, appDeduction: 20, luckReroll: false },
+  { min: 80, max: Infinity, label: "80 岁及以上", physicalKeys: ["str", "con", "dex"], physicalDeduction: 80, eduPenalty: 0, eduChecks: 4, appDeduction: 25, luckReroll: false },
+];
 
 const WEAPON_REFERENCE = [
   { name: "徒手格斗", skill: "格斗（斗殴）", damage: "1D3+DB", range: "接触", ammo: "—", malfunction: "—", note: "所有调查员都可拥有的基础攻击方式。" },
@@ -147,6 +158,125 @@ function rollAllAttributes() {
   );
 }
 
+function getAgeRule(age) {
+  return AGE_RULES.find((rule) => age >= rule.min && age <= rule.max) || null;
+}
+
+function distributeAgeDeduction(attrs, keys, points) {
+  const deductions = Object.fromEntries(keys.map((key) => [key, 0]));
+  let remaining = points;
+
+  while (remaining > 0) {
+    const available = keys
+      .filter((key) => attrs[key] - deductions[key] > 1)
+      .sort((left, right) => {
+        const valueDifference = (attrs[right] - deductions[right]) - (attrs[left] - deductions[left]);
+        return valueDifference || keys.indexOf(left) - keys.indexOf(right);
+      });
+    if (!available.length) break;
+    deductions[available[0]] += 1;
+    remaining -= 1;
+  }
+
+  Object.entries(deductions).forEach(([key, deduction]) => {
+    attrs[key] = Math.max(1, attrs[key] - deduction);
+  });
+  return deductions;
+}
+
+function formatAttributeDeductions(deductions) {
+  return Object.entries(deductions)
+    .filter(([, value]) => value > 0)
+    .map(([key, value]) => `${ATTRIBUTES[key].label} -${value}`)
+    .join("、");
+}
+
+function applyAgeAdjustments(baseAttrs, baseLuck, age, enabled = true) {
+  const attrs = { ...baseAttrs };
+  const rule = getAgeRule(age);
+  const details = {
+    enabled,
+    applied: Boolean(enabled && rule),
+    bracket: rule?.label || "",
+    lines: [],
+    eduChecks: [],
+  };
+  let luck = baseLuck;
+
+  if (!enabled) {
+    details.lines.push("未应用 7版年龄修正");
+    return { attrs, luck, details };
+  }
+  if (!rule) {
+    details.lines.push("15 岁以下无标准年龄修正，保留原始属性");
+    return { attrs, luck, details };
+  }
+
+  if (rule.physicalDeduction > 0) {
+    const deductions = distributeAgeDeduction(attrs, rule.physicalKeys, rule.physicalDeduction);
+    details.physicalDeductions = deductions;
+    details.lines.push(`${formatAttributeDeductions(deductions)}（合计 -${rule.physicalDeduction}）`);
+  }
+
+  if (rule.appDeduction > 0) {
+    const deduction = Math.min(rule.appDeduction, Math.max(0, attrs.app - 1));
+    attrs.app -= deduction;
+    details.appDeduction = deduction;
+    details.lines.push(`APP -${deduction}`);
+  }
+
+  if (rule.eduPenalty > 0) {
+    const deduction = Math.min(rule.eduPenalty, Math.max(0, attrs.edu - 1));
+    attrs.edu -= deduction;
+    details.eduPenalty = deduction;
+    details.lines.push(`EDU -${deduction}`);
+  }
+
+  for (let index = 0; index < rule.eduChecks; index += 1) {
+    const before = attrs.edu;
+    const roll = rollDie(100);
+    const success = roll > before;
+    const rolledGain = success ? rollDie(10) : 0;
+    const after = success ? Math.min(99, before + rolledGain) : before;
+    const gain = after - before;
+    attrs.edu = after;
+    details.eduChecks.push({ roll, before, success, rolledGain, gain, after });
+  }
+
+  if (details.eduChecks.length) {
+    const successes = details.eduChecks.filter((check) => check.success).length;
+    const totalGain = details.eduChecks.reduce((sum, check) => sum + check.gain, 0);
+    const rolls = details.eduChecks.map((check) => check.roll).join("/");
+    details.lines.push(`EDU 增强 ${successes}/${details.eduChecks.length} 次（D100：${rolls}，共 +${totalGain}）`);
+  }
+
+  if (rule.luckReroll) {
+    const secondLuck = rollCharacteristic("3d6");
+    luck = Math.max(baseLuck, secondLuck);
+    details.luckRolls = [baseLuck, secondLuck];
+    details.lines.push(`幸运两次取高：${baseLuck}/${secondLuck} → ${luck}`);
+  }
+
+  return { attrs, luck, details };
+}
+
+function ageAdjustmentText(details) {
+  if (!details) return "";
+  if (!details.applied) return details.lines.join("；");
+  return `${details.bracket}：${details.lines.join("；")}`;
+}
+
+function ageAdjustmentEnabled() {
+  return $("#ageAdjustmentEnabled")?.checked ?? true;
+}
+
+function setAgeAdjustmentEnabled(enabled) {
+  ["#ageAdjustmentEnabled", "#aiAgeAdjustmentEnabled"].forEach((selector) => {
+    const input = $(selector);
+    if (input) input.checked = enabled;
+  });
+}
+
 function calculateDamageBonusAndBuild(str, siz) {
   const total = str + siz;
 
@@ -223,12 +353,24 @@ function applyRollToForm(attrs, luck) {
 }
 
 function createSnapshot(attrs, luck, age, options = {}) {
+  const shouldAdjustAge = options.ageAdjustmentEnabled ?? ageAdjustmentEnabled();
+  const ageRule = getAgeRule(age);
+  const ageBaseLuck = options.source === "ai" && shouldAdjustAge && ageRule?.luckReroll
+    ? rollCharacteristic("3d6")
+    : luck;
+  const adjusted = applyAgeAdjustments(
+    attrs,
+    ageBaseLuck,
+    age,
+    shouldAdjustAge,
+  );
   return {
     id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
     createdAt: new Date(),
     age,
-    attrs: { ...attrs },
-    derived: calculateDerived(attrs, luck, age),
+    attrs: adjusted.attrs,
+    derived: calculateDerived(adjusted.attrs, adjusted.luck, age),
+    ageAdjustment: adjusted.details,
     source: options.source || "random",
     note: options.note || "",
     story: options.story || "",
@@ -245,11 +387,12 @@ function escapeHtml(value) {
 }
 
 function snapshotToText(snapshot) {
-  const { age, attrs, derived, note, source } = snapshot;
+  const { age, attrs, derived, note, source, ageAdjustment } = snapshot;
   const lines = [
     "COC 7版调查员基础属性",
     `年龄：${age}`,
     `生成方式：${source === "ai" ? "AI 命运演算" : "快速随机"}`,
+    ...(ageAdjustment ? [`年龄规则：${ageAdjustmentText(ageAdjustment)}`] : []),
     ...(note ? [`AI 备注：${note}`] : []),
     "",
     ...Object.entries(ATTRIBUTES).map(([key, config]) => {
@@ -264,7 +407,7 @@ function snapshotToText(snapshot) {
 }
 
 function resultCardTemplate(snapshot, displayIndex) {
-  const { age, attrs, derived, createdAt, id, note, source } = snapshot;
+  const { age, attrs, derived, createdAt, id, note, source, ageAdjustment } = snapshot;
   const attributeMarkup = Object.entries(ATTRIBUTES)
     .map(([key, config]) => {
       const value = attrs[key];
@@ -303,6 +446,7 @@ function resultCardTemplate(snapshot, displayIndex) {
       </header>
       <div class="result-card__body">
         ${note ? `<p class="result-card__concept"><span>AI 批注</span>${escapeHtml(note)}</p>` : ""}
+        ${ageAdjustment ? `<p class="result-card__age-rule"><span>年龄规则</span>${escapeHtml(ageAdjustmentText(ageAdjustment))}</p>` : ""}
         <div class="result-attributes">${attributeMarkup}</div>
         <div class="result-derived">${derivedItems}</div>
       </div>
@@ -422,6 +566,7 @@ function buildAiMessages(story, age) {
         "属性含义：STR力量、CON体质、SIZ体型、DEX敏捷、APP外貌与气质、INT智力、POW意志、EDU教育。",
         "只有背景中有明确依据的能力才给高值；保留至少一项人物短板，避免所有属性都偏高或集中在相同区间。",
         "STR/CON/DEX/APP/POW/LUCK 为 15–90；SIZ/INT/EDU 为 40–90；所有数值必须是 5 的倍数。",
+        "返回未经年龄修正的基础值；网页会在收到结果后统一执行 COC 7版年龄修正，不要提前扣减属性或进行 EDU 增强。",
         "不要计算 HP、MP、SAN、DB、Build 或 MOV，网页会自动计算。",
         "note 用中文给出一句贴合人物的简短批注，不超过30个字。",
         "只返回 JSON 对象，字段必须为 str, con, siz, dex, app, int, pow, edu, luck, note。",
@@ -458,6 +603,7 @@ async function generateAiResult(event) {
       source: "ai",
       note: generated.note,
       story,
+      ageAdjustmentEnabled: $("#aiAgeAdjustmentEnabled").checked,
     });
 
     $("#age").value = age;
@@ -792,7 +938,6 @@ async function requestDeepSeekJson(apiKey, messages, maxTokens = 1600, settings 
         thinking: { type: "enabled" },
         reasoning_effort: aiSettings.reasoningEffort,
         response_format: { type: "json_object" },
-        temperature: 0.2,
         max_tokens: tokenLimit,
       }),
     });
@@ -1958,6 +2103,10 @@ async function rollQuickDice() {
 applyAiModelMode(readSavedAiModelMode());
 $$("[data-ai-model-toggle]").forEach((toggle) => {
   toggle.addEventListener("click", toggleAiModelMode);
+});
+
+[$("#ageAdjustmentEnabled"), $("#aiAgeAdjustmentEnabled")].forEach((input) => {
+  input?.addEventListener("change", () => setAgeAdjustmentEnabled(input.checked));
 });
 
 $$('.attribute-input').forEach((input) => input.addEventListener("input", updateLiveValues));

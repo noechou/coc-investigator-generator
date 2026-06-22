@@ -647,6 +647,45 @@ textarea:focus {
   margin-bottom: 8px;
 }
 
+.age-rule-option {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 14px;
+  color: rgba(239, 226, 196, 0.8);
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+
+.age-rule-option input {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  margin: 1px 0 0;
+  accent-color: var(--gold);
+}
+
+.age-rule-option span,
+.age-rule-option small {
+  display: block;
+}
+
+.age-rule-option b {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.age-rule-option small {
+  margin-top: 2px;
+  color: rgba(169, 155, 126, 0.62);
+  font-size: 0.62rem;
+  line-height: 1.4;
+}
+
+.age-rule-option--ai {
+  margin-top: 0;
+}
+
 .primary-button--ai {
   min-width: 145px;
   flex: 0 0 auto;
@@ -957,6 +996,24 @@ textarea:focus {
   font-style: normal;
   font-weight: 700;
   letter-spacing: 0.12em;
+}
+
+.result-card__age-rule {
+  margin: -7px 0 16px;
+  padding: 8px 10px;
+  border-left: 2px solid rgba(185, 150, 85, 0.55);
+  color: rgba(239, 226, 196, 0.68);
+  background: rgba(185, 150, 85, 0.055);
+  font-size: 0.66rem;
+  line-height: 1.55;
+}
+
+.result-card__age-rule span {
+  margin-right: 8px;
+  color: var(--gold);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
 }
 
 .result-attributes {

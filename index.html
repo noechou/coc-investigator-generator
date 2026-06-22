@@ -8,7 +8,7 @@
       content="COC 7版调查员建卡工具，支持快速 Roll 属性、AI 智能填卡、技能分配、武器物品、背景故事与单页打印。"
     />
     <title>COC 7版调查员基础属性生成器</title>
-    <link rel="stylesheet" href="styles.css?v=20260616-6" />
+    <link rel="stylesheet" href="styles.css?v=20260622-1" />
   </head>
   <body>
     <div class="background-art" aria-hidden="true"></div>
@@ -42,6 +42,10 @@
                 <p class="section-kicker">QUICK ROLL</p>
                 <h2 id="quick-actions-title">把命运交给骰子</h2>
                 <p>设置年龄与生成次数，一次最多快速生成 20 张调查员属性卡。</p>
+                <label class="age-rule-option">
+                  <input id="ageAdjustmentEnabled" type="checkbox" checked />
+                  <span><b>生成时应用 7版年龄修正</b><small>自动处理 EDU 增强、年龄扣点与青年幸运取高。</small></span>
+                </label>
               </div>
               <div class="roll-controls">
                 <label class="roll-count">
@@ -84,9 +88,13 @@
                   <span>角色背景</span>
                   <textarea id="characterStory" rows="4" maxlength="2000" placeholder="例如：曾在西线战场担任军医，退伍后于阿卡姆经营一家小诊所，却始终被战壕中的低语纠缠……" aria-label="角色背景"></textarea>
                 </label>
+                <label class="age-rule-option age-rule-option--ai">
+                  <input id="aiAgeAdjustmentEnabled" type="checkbox" checked />
+                  <span><b>生成时应用 7版年龄修正</b><small>AI 先给出基础值，再由浏览器按规则修正。</small></span>
+                </label>
                 <div class="ai-form__footer">
                   <div>
-                    <p id="aiConfigSummary" class="ai-config">deepseek-v4-flash · 深度思考 MEDIUM</p>
+                    <p id="aiConfigSummary" class="ai-config">deepseek-v4-flash · 深度思考 HIGH</p>
                     <p class="ai-privacy">密钥仅用于本次请求，不会保存。</p>
                     <button class="ai-model-toggle" type="button" data-ai-model-toggle>切换模型</button>
                     <p id="aiError" class="ai-error" role="alert" hidden></p>
@@ -490,7 +498,7 @@
           <span>DeepSeek API Key</span>
           <input id="aiSheetApiKey" type="password" placeholder="sk-..." autocomplete="off" spellcheck="false" />
         </label>
-        <p id="aiSheetConfigSummary" class="ai-privacy">使用 deepseek-v4-flash，深度思考 MEDIUM。密钥仅用于本次请求，不会保存。</p>
+        <p id="aiSheetConfigSummary" class="ai-privacy">使用 deepseek-v4-flash，深度思考 HIGH。密钥仅用于本次请求，不会保存。</p>
         <button class="ai-model-toggle ai-model-toggle--modal" type="button" data-ai-model-toggle>切换模型</button>
         <p id="aiSheetError" class="ai-error" role="alert" hidden></p>
         <div class="ai-sheet-modal__actions">
@@ -506,6 +514,6 @@
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <input id="sheetImportFile" type="file" accept="application/json,.json" hidden />
-    <script src="app.js?v=20260616-6"></script>
+    <script src="app.js?v=20260622-1"></script>
   </body>
 </html>
