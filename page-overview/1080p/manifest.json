@@ -1,6 +1,6 @@
 {
-  "capturedAt": "2026-10-29T11:59:03.140Z",
-  "revision": "5c5c370",
+  "capturedAt": "2026-10-29T16:25:25.537Z",
+  "revision": "faee721",
   "viewport": {
     "width": 1920,
     "height": 1080
@@ -13,7 +13,7 @@
     {
       "file": "01-library-paper.png",
       "title": "档案库 · 纸质",
-      "description": "首页街景、最近角色、档案卡与新建入口。",
+      "description": "限阅书库、最近卷宗、档案卡与新建入口。",
       "theme": "paper",
       "width": 1920,
       "height": 1080,
@@ -31,7 +31,7 @@
     {
       "file": "03-create-ai-paper.png",
       "title": "AI 建卡",
-      "description": "完整建卡弹窗、调查桌美术、人物概念与服务设置入口。",
+      "description": "完整建卡弹窗、烛光档案、人物概念与服务设置入口。",
       "theme": "paper",
       "width": 1920,
       "height": 1080,
@@ -62,7 +62,7 @@
       "theme": "paper",
       "width": 1920,
       "height": 1080,
-      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/play"
+      "route": "#/character/character-c954b845-5a54-4606-a035-ef1248d9db4c/play"
     },
     {
       "file": "07-play-character-dark.png",
@@ -71,7 +71,7 @@
       "theme": "dark",
       "width": 1920,
       "height": 1080,
-      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/play"
+      "route": "#/character/character-c954b845-5a54-4606-a035-ef1248d9db4c/play"
     },
     {
       "file": "08-play-skills-paper.png",
@@ -80,7 +80,7 @@
       "theme": "paper",
       "width": 1920,
       "height": 1080,
-      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/play"
+      "route": "#/character/character-c954b845-5a54-4606-a035-ef1248d9db4c/play"
     },
     {
       "file": "09-play-equipment-paper.png",
@@ -89,7 +89,7 @@
       "theme": "paper",
       "width": 1920,
       "height": 1080,
-      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/play"
+      "route": "#/character/character-c954b845-5a54-4606-a035-ef1248d9db4c/play"
     },
     {
       "file": "10-play-notes-paper.png",
@@ -98,7 +98,7 @@
       "theme": "paper",
       "width": 1920,
       "height": 1080,
-      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/play"
+      "route": "#/character/character-c954b845-5a54-4606-a035-ef1248d9db4c/play"
     },
     {
       "file": "11-edit-identity-paper.png",
@@ -107,7 +107,7 @@
       "theme": "paper",
       "width": 1920,
       "height": 1080,
-      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/edit"
+      "route": "#/character/character-c954b845-5a54-4606-a035-ef1248d9db4c/edit"
     },
     {
       "file": "12-edit-skills-paper.png",
@@ -116,7 +116,7 @@
       "theme": "paper",
       "width": 1920,
       "height": 1080,
-      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/edit"
+      "route": "#/character/character-c954b845-5a54-4606-a035-ef1248d9db4c/edit"
     },
     {
       "file": "13-edit-equipment-paper.png",
@@ -125,7 +125,7 @@
       "theme": "paper",
       "width": 1920,
       "height": 1080,
-      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/edit"
+      "route": "#/character/character-c954b845-5a54-4606-a035-ef1248d9db4c/edit"
     },
     {
       "file": "14-edit-backstory-paper.png",
@@ -134,7 +134,7 @@
       "theme": "paper",
       "width": 1920,
       "height": 1080,
-      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/edit"
+      "route": "#/character/character-c954b845-5a54-4606-a035-ef1248d9db4c/edit"
     },
     {
       "file": "15-ai-settings-paper.png",
@@ -143,7 +143,7 @@
       "theme": "paper",
       "width": 1920,
       "height": 1080,
-      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/edit"
+      "route": "#/character/character-c954b845-5a54-4606-a035-ef1248d9db4c/edit"
     },
     {
       "file": "16-print-paper.png",
@@ -152,7 +152,7 @@
       "theme": "paper",
       "width": 1920,
       "height": 1080,
-      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/print"
+      "route": "#/character/character-c954b845-5a54-4606-a035-ef1248d9db4c/print"
     },
     {
       "file": "17-import-paper.png",
@@ -161,7 +161,7 @@
       "theme": "paper",
       "width": 1920,
       "height": 1080,
-      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/play"
+      "route": "#/character/character-c954b845-5a54-4606-a035-ef1248d9db4c/play"
     },
     {
       "file": "18-draft-paper.png",
@@ -170,7 +170,7 @@
       "theme": "paper",
       "width": 1920,
       "height": 1080,
-      "route": "#/character/character-34e6c6f2-aec8-49b2-9e1e-f2cd834d9f09/edit"
+      "route": "#/character/character-dac2eafa-c303-4667-a76f-0a47d722b7ea/edit"
     }
   ]
 }
