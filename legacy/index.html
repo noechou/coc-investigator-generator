@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="COC 7版调查员建卡工具，支持快速 Roll 属性、AI 智能填卡、技能分配、武器物品、背景故事与单页打印。"
+    />
+    <title>COC 7版调查员基础属性生成器</title>
+    <link rel="stylesheet" href="styles.css?v=20260622-1" />
+  </head>
+  <body>
+    <div class="background-art" aria-hidden="true"></div>
+    <div id="transitionCurtain" class="transition-curtain" aria-hidden="true">
+      <div class="transition-curtain__seal">7E</div>
+    </div>
+
+    <div id="generatorView">
+    <header class="hero">
+      <div class="hero__content">
+        <div class="archive-mark" aria-hidden="true">
+          <span>7E</span>
+        </div>
+        <p class="eyebrow">ARKHAM ARCHIVE · INVESTIGATOR FILE</p>
+        <h1>COC 7版调查员<br />基础属性生成器</h1>
+        <p class="hero__description">快速 Roll 属性，也能继续补全技能、武器、随身物品、背景故事与单页角色卡。</p>
+        <div class="hero__rule">
+          <span></span>
+          <b>CASE FILE 1920–∞</b>
+          <span></span>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="quick-roll-stage" aria-label="角色属性生成方式">
+        <div id="quickRollFlip" class="quick-roll-flip">
+          <div class="quick-roll-flip__inner">
+            <section id="quickRollFront" class="action-panel quick-roll-face quick-roll-face--front" aria-labelledby="quick-actions-title">
+              <div class="action-panel__copy">
+                <p class="section-kicker">QUICK ROLL</p>
+                <h2 id="quick-actions-title">把命运交给骰子</h2>
+                <p>设置年龄与生成次数，一次最多快速生成 20 张调查员属性卡。</p>
+                <label class="age-rule-option">
+                  <input id="ageAdjustmentEnabled" type="checkbox" checked />
+                  <span><b>生成时应用 7版年龄修正</b><small>自动处理 EDU 增强、年龄扣点与青年幸运取高。</small></span>
+                </label>
+              </div>
+              <div class="roll-controls">
+                <label class="roll-count">
+                  <span>年龄</span>
+                  <input id="age" type="number" min="1" max="120" value="28" />
+                  <span>岁</span>
+                </label>
+                <label class="roll-count">
+                  <span>随机</span>
+                  <input id="rollCount" type="number" min="1" max="20" value="1" />
+                  <span>次</span>
+                </label>
+                <button id="rollAll" class="primary-button" type="button">
+                  <span class="primary-button__icon" aria-hidden="true">✦</span>
+                  全部随机
+                </button>
+              </div>
+            </section>
+
+            <section id="quickRollBack" class="action-panel action-panel--ai quick-roll-face quick-roll-face--back" aria-labelledby="ai-actions-title" aria-hidden="true" inert>
+              <div class="ai-panel__heading">
+                <div>
+                  <p class="section-kicker">FATE INTERPRETATION</p>
+                  <h2 id="ai-actions-title">命运演算</h2>
+                </div>
+                <p>由 DeepSeek 根据人物经历分配符合 COC 7版范围的属性。</p>
+              </div>
+              <form id="aiForm" class="ai-form">
+                <div class="ai-form__row">
+                  <label class="ai-field ai-field--key">
+                    <span>DeepSeek API Key</span>
+                    <input id="deepseekApiKey" type="password" placeholder="sk-..." autocomplete="off" spellcheck="false" aria-label="DeepSeek API Key" />
+                  </label>
+                  <label class="ai-field ai-field--age">
+                    <span>年龄</span>
+                    <input id="aiAge" type="number" min="1" max="120" value="28" aria-label="AI 模式年龄" />
+                  </label>
+                </div>
+                <label class="ai-field ai-field--story">
+                  <span>角色背景</span>
+                  <textarea id="characterStory" rows="4" maxlength="2000" placeholder="例如：曾在西线战场担任军医，退伍后于阿卡姆经营一家小诊所，却始终被战壕中的低语纠缠……" aria-label="角色背景"></textarea>
+                </label>
+                <label class="age-rule-option age-rule-option--ai">
+                  <input id="aiAgeAdjustmentEnabled" type="checkbox" checked />
+                  <span><b>生成时应用 7版年龄修正</b><small>AI 先给出基础值，再由浏览器按规则修正。</small></span>
+                </label>
+                <div class="ai-form__footer">
+                  <div>
+                    <p id="aiConfigSummary" class="ai-config">deepseek-v4-flash · 深度思考 HIGH</p>
+                    <p class="ai-privacy">密钥仅用于本次请求，不会保存。</p>
+                    <button class="ai-model-toggle" type="button" data-ai-model-toggle>切换模型</button>
+                    <p id="aiError" class="ai-error" role="alert" hidden></p>
+                  </div>
+                  <button id="generateWithAi" class="primary-button primary-button--ai" type="submit">
+                    <span class="primary-button__icon" aria-hidden="true">✧</span>
+                    <span class="ai-button-label">开始演算</span>
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        </div>
+        <button id="toggleAiMode" class="ai-mode-toggle" type="button" aria-pressed="false" aria-controls="quickRollFlip">
+          <span class="ai-mode-toggle__orbit" aria-hidden="true">↻</span>
+          <span id="toggleAiLabel">让 AI 替你填属性</span>
+        </button>
+      </section>
+
+      <section class="results-section" aria-labelledby="results-title">
+        <div class="results-heading">
+          <div>
+            <p class="section-kicker">GENERATED FILES</p>
+            <h2 id="results-title">生成结果 <span id="resultCount">0</span></h2>
+          </div>
+          <button id="clearResults" class="text-button" type="button" disabled>清空结果</button>
+        </div>
+
+        <div id="emptyState" class="empty-state">
+          <div class="empty-state__sigil" aria-hidden="true">◇</div>
+          <h3>档案柜仍是空的</h3>
+          <p>设置年龄和随机次数，然后点击“全部随机”生成属性卡。</p>
+        </div>
+        <div id="resultsGrid" class="results-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="attributes-title">
+        <div class="section-heading">
+          <div>
+            <span class="section-number">03</span>
+            <p class="section-kicker">CHARACTERISTICS</p>
+            <h2 id="attributes-title">八项基础属性</h2>
+          </div>
+          <p>可手动修改，也可点击骰子单独重掷。</p>
+        </div>
+
+        <div class="attribute-table">
+          <div class="attribute-table__head" aria-hidden="true">
+            <span>属性</span>
+            <span>规则</span>
+            <span>数值</span>
+            <span>半值</span>
+            <span>五分之一</span>
+            <span></span>
+          </div>
+
+          <div class="attribute-row" data-attr="str">
+            <div class="attribute-name"><b>STR</b><span>力量</span></div>
+            <code>3D6 × 5</code>
+            <input id="str" class="attribute-input" type="number" min="0" max="999" value="50" aria-label="STR 力量" />
+            <output id="str-half">25</output>
+            <output id="str-fifth">10</output>
+            <button class="icon-button" type="button" data-roll-attr="str" aria-label="重新随机力量">⌁</button>
+          </div>
+
+          <div class="attribute-row" data-attr="con">
+            <div class="attribute-name"><b>CON</b><span>体质</span></div>
+            <code>3D6 × 5</code>
+            <input id="con" class="attribute-input" type="number" min="0" max="999" value="50" aria-label="CON 体质" />
+            <output id="con-half">25</output>
+            <output id="con-fifth">10</output>
+            <button class="icon-button" type="button" data-roll-attr="con" aria-label="重新随机体质">⌁</button>
+          </div>
+
+          <div class="attribute-row" data-attr="siz">
+            <div class="attribute-name"><b>SIZ</b><span>体型</span></div>
+            <code>(2D6 + 6) × 5</code>
+            <input id="siz" class="attribute-input" type="number" min="0" max="999" value="65" aria-label="SIZ 体型" />
+            <output id="siz-half">32</output>
+            <output id="siz-fifth">13</output>
+            <button class="icon-button" type="button" data-roll-attr="siz" aria-label="重新随机体型">⌁</button>
+          </div>
+
+          <div class="attribute-row" data-attr="dex">
+            <div class="attribute-name"><b>DEX</b><span>敏捷</span></div>
+            <code>3D6 × 5</code>
+            <input id="dex" class="attribute-input" type="number" min="0" max="999" value="50" aria-label="DEX 敏捷" />
+            <output id="dex-half">25</output>
+            <output id="dex-fifth">10</output>
+            <button class="icon-button" type="button" data-roll-attr="dex" aria-label="重新随机敏捷">⌁</button>
+          </div>
+
+          <div class="attribute-row" data-attr="app">
+            <div class="attribute-name"><b>APP</b><span>外貌</span></div>
+            <code>3D6 × 5</code>
+            <input id="app" class="attribute-input" type="number" min="0" max="999" value="50" aria-label="APP 外貌" />
+            <output id="app-half">25</output>
+            <output id="app-fifth">10</output>
+            <button class="icon-button" type="button" data-roll-attr="app" aria-label="重新随机外貌">⌁</button>
+          </div>
+
+          <div class="attribute-row" data-attr="int">
+            <div class="attribute-name"><b>INT</b><span>智力</span></div>
+            <code>(2D6 + 6) × 5</code>
+            <input id="int" class="attribute-input" type="number" min="0" max="999" value="65" aria-label="INT 智力" />
+            <output id="int-half">32</output>
+            <output id="int-fifth">13</output>
+            <button class="icon-button" type="button" data-roll-attr="int" aria-label="重新随机智力">⌁</button>
+          </div>
+
+          <div class="attribute-row" data-attr="pow">
+            <div class="attribute-name"><b>POW</b><span>意志</span></div>
+            <code>3D6 × 5</code>
+            <input id="pow" class="attribute-input" type="number" min="0" max="999" value="50" aria-label="POW 意志" />
+            <output id="pow-half">25</output>
+            <output id="pow-fifth">10</output>
+            <button class="icon-button" type="button" data-roll-attr="pow" aria-label="重新随机意志">⌁</button>
+          </div>
+
+          <div class="attribute-row" data-attr="edu">
+            <div class="attribute-name"><b>EDU</b><span>教育</span></div>
+            <code>(2D6 + 6) × 5</code>
+            <input id="edu" class="attribute-input" type="number" min="0" max="999" value="65" aria-label="EDU 教育" />
+            <output id="edu-half">32</output>
+            <output id="edu-fifth">13</output>
+            <button class="icon-button" type="button" data-roll-attr="edu" aria-label="重新随机教育">⌁</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="derived-title">
+        <div class="section-heading">
+          <div>
+            <span class="section-number">04</span>
+            <p class="section-kicker">DERIVED VALUES</p>
+            <h2 id="derived-title">衍生属性</h2>
+          </div>
+          <p>依据当前属性与年龄自动计算。</p>
+        </div>
+
+        <div class="derived-grid">
+          <article class="derived-card"><span>HP</span><strong id="hp">11</strong><small>生命值</small></article>
+          <article class="derived-card"><span>MP</span><strong id="mp">10</strong><small>魔法值</small></article>
+          <article class="derived-card"><span>SAN</span><strong id="san">50</strong><small>初始理智</small></article>
+          <article class="derived-card derived-card--luck">
+            <span>LUCK</span>
+            <input id="luck" type="number" min="0" max="999" value="50" aria-label="Luck 幸运" />
+            <button type="button" id="rollLuck" aria-label="重新随机幸运">3D6 × 5</button>
+            <small>幸运</small>
+          </article>
+          <article class="derived-card derived-card--wide"><span>DB</span><strong id="db">0</strong><small>伤害加值</small></article>
+          <article class="derived-card"><span>BUILD</span><strong id="build">0</strong><small>体格</small></article>
+          <article class="derived-card"><span>MOV</span><strong id="mov">8</strong><small>移动率</small></article>
+        </div>
+      </section>
+
+      <section class="create-sheet-panel" aria-labelledby="create-sheet-title">
+        <div>
+          <p class="section-kicker">FINALIZE INVESTIGATOR</p>
+          <h2 id="create-sheet-title">将属性写入调查员档案</h2>
+          <p>请先生成一张属性卡；载入任意结果后，可继续调整属性，再创建完整版角色卡。</p>
+        </div>
+        <div class="create-sheet-actions">
+          <button id="importSheetFromGenerator" class="sheet-action-button" type="button">导入 JSON 角色卡</button>
+          <button id="createFullSheet" class="primary-button create-sheet-button" type="button" disabled>
+            <span aria-hidden="true">◆</span>
+            确定并创建角色卡
+          </button>
+        </div>
+      </section>
+
+    </main>
+    </div>
+
+    <section id="fullSheetView" class="full-sheet-view" aria-labelledby="full-sheet-title" hidden>
+      <header class="sheet-topbar">
+        <div>
+          <p class="section-kicker">ARKHAM ARCHIVE · COMPLETE DOSSIER</p>
+          <h1 id="full-sheet-title">调查员完整档案</h1>
+        </div>
+        <div class="sheet-topbar__actions">
+          <span id="saveStatus" class="save-status">尚未保存</span>
+          <button id="loadSavedSheet" class="sheet-action-button" type="button">读取存档</button>
+          <button id="importSheet" class="sheet-action-button" type="button">导入 JSON</button>
+          <button id="saveSheet" class="sheet-action-button" type="button">保存到本机</button>
+          <button id="exportSheet" class="sheet-action-button" type="button">导出文件</button>
+          <button id="printSheet" class="sheet-action-button" type="button">单页打印 / PDF</button>
+          <button id="backToGenerator" class="sheet-action-button sheet-action-button--muted" type="button">返回属性生成</button>
+        </div>
+      </header>
+
+      <main class="sheet-canvas">
+        <section class="sheet-card sheet-identity" aria-labelledby="identity-title">
+          <div class="portrait-block">
+            <button id="portraitButton" class="portrait-frame" type="button" aria-label="上传调查员头像">
+              <img id="investigatorPortrait" src="assets/default-investigator-portrait.jpg" alt="调查员默认头像" />
+              <span>点击上传头像</span>
+            </button>
+            <input id="portraitUpload" type="file" accept="image/png,image/jpeg,image/webp" hidden />
+            <button id="resetPortrait" class="small-text-button" type="button">恢复默认头像</button>
+          </div>
+
+          <div class="identity-content">
+            <div class="sheet-section-heading">
+              <div>
+                <p class="section-kicker">IDENTIFICATION</p>
+                <h2 id="identity-title">基础信息</h2>
+              </div>
+              <span class="sheet-file-number">FORM 7E-1920</span>
+            </div>
+            <div class="identity-grid">
+              <label class="sheet-field sheet-field--name"><span>姓名</span><input id="sheetName" data-sheet-field="name" type="text" placeholder="调查员姓名" /></label>
+              <label class="sheet-field"><span>年龄</span><input id="sheetAge" data-sheet-field="age" type="number" min="1" max="120" /></label>
+              <label class="sheet-field"><span>性别</span><input id="sheetGender" data-sheet-field="gender" type="text" placeholder="自定义" /></label>
+              <label class="sheet-field sheet-field--occupation">
+                <span>职业</span>
+                <select id="sheetOccupation" data-sheet-field="occupationId" aria-label="职业选择"></select>
+              </label>
+              <label class="sheet-field"><span>时代背景</span><select id="sheetEra" data-sheet-field="era" aria-label="时代背景"><option value="1920s">1920s</option><option value="现代">现代</option><option value="其他">其他</option><option value="-">-</option></select></label>
+              <label class="sheet-field"><span>现居地</span><input id="sheetResidence" data-sheet-field="residence" type="text" placeholder="现居城市" /></label>
+              <label class="sheet-field"><span>出生地</span><input id="sheetBirthplace" data-sheet-field="birthplace" type="text" placeholder="出生地点" /></label>
+            </div>
+            <section id="occupationSummary" class="occupation-summary" aria-live="polite"></section>
+          </div>
+        </section>
+
+        <div class="sheet-two-column">
+          <section class="sheet-card" aria-labelledby="sheet-characteristics-title">
+            <div class="sheet-section-heading">
+              <div><p class="section-kicker">CHARACTERISTICS</p><h2 id="sheet-characteristics-title">属性</h2></div>
+              <span>常规 / 困难 / 极难</span>
+            </div>
+            <div id="sheetAttributes" class="sheet-attributes"></div>
+          </section>
+
+          <section class="sheet-card" aria-labelledby="sheet-derived-title">
+            <div class="sheet-section-heading">
+              <div><p class="section-kicker">CURRENT STATUS</p><h2 id="sheet-derived-title">衍生属性</h2></div>
+              <span>当前值可在跑团中修改</span>
+            </div>
+            <div id="sheetDerived" class="sheet-derived"></div>
+          </section>
+        </div>
+
+        <section class="sheet-card skill-sheet-card" aria-labelledby="skills-title">
+          <div class="sheet-section-heading sheet-section-heading--skills">
+            <div><p class="section-kicker">SKILLS</p><h2 id="skills-title">技能</h2></div>
+            <div class="skill-tools">
+              <input id="skillSearch" type="search" placeholder="搜索技能" aria-label="搜索技能" />
+              <button id="addCustomSkill" class="small-action-button" type="button">＋ 自定义技能</button>
+            </div>
+          </div>
+          <div class="skill-budget-dock">
+            <div class="skill-budget-board" aria-label="技能点预算">
+              <article><span>职业点</span><strong id="occupationPointsRemaining">0 / 0</strong><small id="occupationPointsFormula">请先选择职业</small></article>
+              <article><span>兴趣点</span><strong id="interestPointsRemaining">0 / 0</strong><small>可用点数 = INT × 2</small></article>
+              <article><span>职业技能</span><strong id="occupationSkillCount">0 / 8</strong><small id="occupationSkillRequirement">按职业要求选择</small></article>
+            </div>
+            <p id="skillBudgetWarning" class="sheet-help skill-budget-warning">选择职业后，系统会预选其职业技能并计算可用点数。</p>
+          </div>
+          <p class="sheet-help">建卡时单项技能的“基础 + 职业 + 兴趣”最高为 75；克苏鲁神话不可投入职业点或兴趣点。成长点不属于初始点数池，用于记录跑团后的技能提升。</p>
+          <div class="skill-column-head" aria-hidden="true"><span>职业</span><span>技能名称</span><span>基础</span><span>职业点</span><span>兴趣点</span><span>成长点</span><span>总值</span><span>困难</span><span>极难</span><span></span></div>
+          <div id="skillsGrid" class="skills-grid"></div>
+        </section>
+
+        <section class="sheet-card" aria-labelledby="weapons-title">
+          <div class="sheet-section-heading">
+            <div><p class="section-kicker">WEAPONS</p><h2 id="weapons-title">武器</h2></div>
+            <button id="addWeapon" class="small-action-button" type="button">＋ 添加武器</button>
+          </div>
+          <div class="weapon-head" aria-hidden="true"><span>武器</span><span>使用技能</span><span>成功率</span><span>伤害</span><span>射程</span><span>弹药</span><span>故障</span><span></span></div>
+          <div id="weaponsList" class="weapons-list"></div>
+        </section>
+
+        <div class="sheet-two-column sheet-two-column--lower">
+          <section class="sheet-card" aria-labelledby="possessions-title">
+            <div class="sheet-section-heading"><div><p class="section-kicker">POSSESSIONS</p><h2 id="possessions-title">随身物品</h2></div></div>
+            <textarea id="sheetPossessions" data-sheet-field="possessions" class="sheet-large-text" rows="9" placeholder="衣物、工具、线索、典籍、药品以及其他随身物品……"></textarea>
+          </section>
+
+          <section class="sheet-card" aria-labelledby="assets-title">
+            <div class="sheet-section-heading"><div><p class="section-kicker">CASH & ASSETS</p><h2 id="assets-title">资产</h2></div></div>
+            <div class="asset-grid">
+              <label class="sheet-field"><span>信用评级</span><input id="assetCredit" data-sheet-field="assetCredit" type="number" min="0" max="99" value="0" /></label>
+              <label class="sheet-field"><span>现金</span><input id="assetCash" data-sheet-field="assetCash" type="text" placeholder="$0" /></label>
+              <label class="sheet-field"><span>消费水平</span><input id="assetSpending" data-sheet-field="assetSpending" type="text" placeholder="$0 / 日" /></label>
+            </div>
+            <label class="sheet-field sheet-field--stacked"><span>资产与不动产</span><textarea id="assetDetails" data-sheet-field="assetDetails" rows="5" placeholder="房产、车辆、存款、收藏品、债务……"></textarea></label>
+          </section>
+        </div>
+
+        <section class="sheet-card" aria-labelledby="story-title">
+          <div class="sheet-section-heading story-heading">
+            <div><p class="section-kicker">BACKSTORY</p><h2 id="story-title">背景故事</h2></div>
+            <div class="story-heading__actions">
+              <span>自由记录人物经历、信念与秘密</span>
+              <button id="openAiSheetFill" class="small-action-button ai-sheet-button" type="button">✦ AI 智能填卡</button>
+            </div>
+          </div>
+          <p class="sheet-help backstory-help">前六项适合作为角色的心理支点；伤疤、恐惧症和神话记录没有依据时可以留空或写“无”。</p>
+          <div class="backstory-detail-grid">
+            <label class="sheet-field sheet-field--stacked"><span>个人描述</span><textarea id="backstoryPersonalDescription" data-sheet-field="personalDescription" rows="3" placeholder="外貌、衣着、气质、口音或第一印象……"></textarea></label>
+            <label class="sheet-field sheet-field--stacked"><span>思想 / 信念</span><textarea id="backstoryIdeologyBeliefs" data-sheet-field="ideologyBeliefs" rows="3" placeholder="支撑角色行动的信条、价值观或执念……"></textarea></label>
+            <label class="sheet-field sheet-field--stacked"><span>重要之人</span><textarea id="backstorySignificantPeople" data-sheet-field="significantPeople" rows="3" placeholder="姓名、关系，以及为何重要……"></textarea></label>
+            <label class="sheet-field sheet-field--stacked"><span>意义非凡之地</span><textarea id="backstoryMeaningfulLocations" data-sheet-field="meaningfulLocations" rows="3" placeholder="故乡、书房、战场、诊所或某个不能忘记的地点……"></textarea></label>
+            <label class="sheet-field sheet-field--stacked"><span>宝贵之物</span><textarea id="backstoryTreasuredPossessions" data-sheet-field="treasuredPossessions" rows="3" placeholder="纪念品、工具、照片、信件、护身符……"></textarea></label>
+            <label class="sheet-field sheet-field--stacked"><span>特质</span><textarea id="backstoryTraits" data-sheet-field="traits" rows="3" placeholder="慷慨、固执、多疑、冲动、谨慎等可扮演的性格特征……"></textarea></label>
+            <label class="sheet-field sheet-field--stacked"><span>伤疤 / 伤病</span><textarea id="backstoryInjuriesScars" data-sheet-field="injuriesScars" rows="3" placeholder="没有明确经历时可留空或写“无”。"></textarea></label>
+            <label class="sheet-field sheet-field--stacked"><span>恐惧症 / 躁狂症</span><textarea id="backstoryPhobiasManias" data-sheet-field="phobiasManias" rows="3" placeholder="通常由经历或跑团事件产生；没有依据时可留空。"></textarea></label>
+            <label class="sheet-field sheet-field--stacked"><span>遭遇神话 / 秘典记录</span><textarea id="backstoryMythosTomes" data-sheet-field="mythosTomes" rows="3" placeholder="神话遭遇、秘典、法术、异物；开卡无依据时建议留空。"></textarea></label>
+          </div>
+          <label class="sheet-field sheet-field--stacked backstory-story-field">
+            <span>完整背景故事</span>
+            <textarea id="sheetStory" data-sheet-field="story" class="sheet-large-text sheet-story" rows="12" placeholder="在此写下调查员的完整背景故事……"></textarea>
+          </label>
+        </section>
+
+        <section class="sheet-card quick-dice-panel" aria-labelledby="quick-dice-title">
+          <div class="sheet-section-heading quick-dice-heading">
+            <div><p class="section-kicker">QUICK DICE</p><h2 id="quick-dice-title">快速骰子</h2></div>
+            <span>选择骰面，点击骰子本体投掷</span>
+          </div>
+          <div class="quick-dice-layout">
+            <div class="dice-controls">
+              <label><span>数量</span><select id="diceCount" aria-label="骰子数量"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+              <label><span>骰面</span><select id="diceSides" aria-label="骰子类型"><option value="4">D4</option><option value="6" selected>D6</option><option value="8">D8</option><option value="10">D10</option><option value="12">D12</option><option value="20">D20</option><option value="100">D100</option></select></label>
+            </div>
+            <button id="quickDie" class="quick-die" type="button" aria-label="投掷 D6">
+              <span class="dice-launch-icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" role="presentation">
+                  <path fill="currentColor" fill-rule="evenodd" d="M17.429 2.637a3 3 0 0 0-2.858 0l-10 5.416A3 3 0 0 0 3 10.691V21.31a3 3 0 0 0 1.571 2.638l10 5.416a3 3 0 0 0 2.858 0l10-5.416A3 3 0 0 0 29 21.309V10.69a3 3 0 0 0-1.571-2.638l-10-5.416Zm-4.497 3.162L5.933 9.59l3.659 1.22 3.34-5.01ZM5 11.387v7.003l3.501-5.835L5 11.387ZM7.023 23 15 27.321V23H7.023ZM17 27.321 24.977 23H17v4.321Zm10-8.931v-7.003l-3.501 1.168L27 18.39Zm-.933-8.8-7-3.791 3.341 5.01 3.659-1.219ZM14.234 21 10 13.944 5.766 21h8.468ZM16 20.056 11.766 13h8.468L16 20.056Zm1.766.944L22 13.944 26.234 21h-8.468ZM16 4.803 11.868 11h8.263L16 4.803Z" clip-rule="evenodd" />
+                </svg>
+              </span>
+              <span class="dice-readout"><b id="quickDieResult">?</b><small id="quickDieLabel">D6</small></span>
+              <span id="diceEngineStatus" class="dice-engine-status">3D PHYSICS</span>
+            </button>
+            <div class="dice-log-wrap">
+              <div class="dice-log-title"><span>投掷记录</span><button id="clearDiceLog" class="small-text-button" type="button">清空</button></div>
+              <ol id="diceLog" class="dice-log"><li class="dice-log-empty">尚未投掷骰子</li></ol>
+            </div>
+          </div>
+        </section>
+
+        <section class="sheet-bottom-actions">
+          <button id="saveSheetBottom" class="primary-button" type="button">保存角色卡</button>
+          <button id="importSheetBottom" class="sheet-action-button" type="button">导入 JSON</button>
+          <button id="exportSheetBottom" class="sheet-action-button" type="button">导出 JSON 文件</button>
+          <button id="printSheetBottom" class="sheet-action-button" type="button">单页打印 / PDF</button>
+        </section>
+      </main>
+    </section>
+
+    <div id="diceBoxOverlay" class="dice-box-overlay" aria-hidden="true"></div>
+
+    <div id="aiSheetModal" class="ai-sheet-modal" role="dialog" aria-modal="true" aria-labelledby="ai-sheet-modal-title" hidden>
+      <button class="ai-sheet-modal__backdrop" type="button" data-close-ai-sheet aria-label="关闭 AI 填卡窗口"></button>
+      <section class="ai-sheet-modal__panel">
+        <button class="ai-sheet-modal__close" type="button" data-close-ai-sheet aria-label="关闭">×</button>
+        <p class="section-kicker">FATE INTERPRETATION · COMPLETE DOSSIER</p>
+        <h2 id="ai-sheet-modal-title">根据背景故事智能填卡</h2>
+        <p id="aiSheetModalIntro" class="ai-sheet-modal__intro">AI 会先选择职业与职业技能，再根据本地计算出的点数预算分配技能；也可按下方选项补全武器、随身物品或扩写背景。所有结果都会由浏览器重新校验。</p>
+        <label class="ai-field ai-field--era">
+          <span>时代背景</span>
+          <select id="aiSheetEra" aria-label="AI 填卡时代背景">
+            <option value="1920s">1920s</option>
+            <option value="现代">现代</option>
+            <option value="其他">其他</option>
+            <option value="-">-</option>
+          </select>
+        </label>
+        <div class="ai-sheet-stages" aria-label="AI 填卡步骤">
+          <article data-ai-sheet-stage="1"><b>01</b><span>解析背景与职业</span></article>
+          <article data-ai-sheet-stage="2"><b>02</b><span>计算并分配技能点</span></article>
+          <article data-ai-sheet-stage="3"><b>03</b><span>本地规则校验</span></article>
+          <article data-ai-sheet-stage="4"><b>04</b><span>写入装备与背景</span></article>
+        </div>
+        <fieldset class="ai-sheet-options">
+          <legend>自动补全内容</legend>
+          <label>
+            <input id="aiAutoWeapons" type="checkbox" checked />
+            <span>自动创建武器</span>
+            <small>普通人可只保留徒手格斗，不强行配枪。</small>
+          </label>
+          <label>
+            <input id="aiAutoPossessions" type="checkbox" checked />
+            <span>自动创建随身物品</span>
+            <small>根据职业、年代和背景补充工具与线索。</small>
+          </label>
+          <label>
+            <input id="aiExpandStory" type="checkbox" />
+            <span>自动扩写背景故事</span>
+            <small>勾选后会扩写到约 500 字。</small>
+          </label>
+          <label>
+            <input id="aiAutoBackstoryDetails" type="checkbox" checked />
+            <span>自动补全人物背景细项</span>
+            <small>优先补前六项；伤疤、恐惧症、神话记录无明确依据时会保持克制。</small>
+          </label>
+        </fieldset>
+        <label class="ai-field">
+          <span>DeepSeek API Key</span>
+          <input id="aiSheetApiKey" type="password" placeholder="sk-..." autocomplete="off" spellcheck="false" />
+        </label>
+        <p id="aiSheetConfigSummary" class="ai-privacy">使用 deepseek-v4-flash，深度思考 HIGH。密钥仅用于本次请求，不会保存。</p>
+        <button class="ai-model-toggle ai-model-toggle--modal" type="button" data-ai-model-toggle>切换模型</button>
+        <p id="aiSheetError" class="ai-error" role="alert" hidden></p>
+        <div class="ai-sheet-modal__actions">
+          <button class="sheet-action-button" type="button" data-close-ai-sheet>暂不填卡</button>
+          <button id="runAiSheetFill" class="primary-button primary-button--ai" type="button"><span class="ai-button-label">开始智能填卡</span></button>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <p>COC 7E Investigator Generator · The stars are never quite right.</p>
+    </footer>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <input id="sheetImportFile" type="file" accept="application/json,.json" hidden />
+    <script src="app.js?v=20260622-1"></script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "coc-v2",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5173
+    },
+    {
+      "name": "coc-v2-production",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-I", "-m", "http.server", "4174", "--bind", "127.0.0.1", "--directory", "/Users/noechou/Claude/coc-investigator-generator-v2"],
+      "port": 4174
+    }
+  ]
+}

@@ -1,10 +1,17 @@
 @echo off
 setlocal
 cd /d "%~dp0\.."
-set "PORT=%~1"
-if "%PORT%"=="" set "PORT=8000"
-
-echo COC Investigator Generator is starting on local port %PORT%...
-echo Local: http://127.0.0.1:%PORT%/
+where npm >nul 2>&1
+if not "%errorlevel%"=="0" (
+  echo Install Node.js 22.12 or later before starting this app.
+  pause
+  exit /b 1
+)
+if not exist node_modules (
+  echo Install dependencies first with npm ci.
+  pause
+  exit /b 1
+)
+echo Starting COC Investigator Archive on http://127.0.0.1:5173/
 echo Press Ctrl+C to stop the server.
-python -m http.server %PORT%
+call npm run dev

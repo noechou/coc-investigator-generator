@@ -1,0 +1,149 @@
+:root {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC",
+    "Microsoft YaHei", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --serif:
+    "Iowan Old Style", "Palatino Linotype", "Songti SC", "Noto Serif SC", serif;
+  --paper: #ece5d3;
+  --surface: #f8f4e8;
+  --surface-strong: #fffdf4;
+  --sidebar: #e2dbc8;
+  --ink: #252a28;
+  --muted: #64685e;
+  --line: #c8c3b1;
+  --line-soft: #dcd6c3;
+  --accent: #2f554b;
+  --accent-contrast: #fffdf4;
+  --accent-soft: #dbe3d7;
+  --red: #8a3d42;
+  --red-soft: #f0ded5;
+  --gold: #8a6c31;
+  --shadow: 0 12px 30px #403b2710;
+  --radius: 6px;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --paper: #17211f;
+  --surface: #202e29;
+  --surface-strong: #273730;
+  --sidebar: #121c19;
+  --ink: #e4e6da;
+  --muted: #b8c2b8;
+  --line: #4e6257;
+  --line-soft: #364a40;
+  --accent: #a7c5af;
+  --accent-contrast: #14271d;
+  --accent-soft: #314c3b;
+  --red: #e0a1a0;
+  --red-soft: #492d2e;
+  --gold: #cfb16f;
+  --shadow: 0 12px 30px #00000020;
+  color-scheme: dark;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+button,
+a {
+  touch-action: manipulation;
+}
+a {
+  color: inherit;
+}
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+button,
+input,
+select,
+textarea {
+  border-radius: var(--radius);
+}
+input,
+textarea,
+select {
+  color: var(--ink);
+  background: var(--surface-strong);
+  border: 1px solid var(--line);
+  min-height: 44px;
+  padding: 9px 12px;
+  width: 100%;
+}
+textarea {
+  resize: vertical;
+  line-height: 1.7;
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.85;
+}
+input[type="checkbox"] {
+  min-height: 20px;
+  height: 20px;
+  width: 20px;
+  padding: 0;
+  accent-color: var(--accent);
+}
+input[type="number"] {
+  font-variant-numeric: tabular-nums;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h1,
+h2,
+h3 {
+  font-weight: 600;
+}
+svg {
+  flex-shrink: 0;
+}
+::selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

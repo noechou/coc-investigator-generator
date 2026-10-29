@@ -1,0 +1,274 @@
+.print-view {
+  padding: 25px;
+}
+.print-controls {
+  max-width: 900px;
+  margin: 0 auto 25px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.print-controls p {
+  font-size: 11px;
+  color: var(--muted);
+  flex: 1;
+}
+.print-document {
+  width: min(100%, 210mm);
+  margin: auto;
+  padding: 13mm;
+  background: #fffdf5;
+  color: #252a28;
+  border: 1px solid #c8c3b1;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.print-document-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 2px solid #2f554b;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+.print-document-header span {
+  font-size: 10px;
+  color: #64685e;
+}
+.print-document-header h1 {
+  font: 600 31px/1.5 var(--serif);
+}
+.print-document-header p {
+  font-size: 11px;
+}
+.print-document-header img {
+  width: 55px;
+  height: 75px;
+  object-fit: cover;
+}
+.print-concept {
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+.print-identity {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 25px;
+  margin-bottom: 18px;
+}
+.print-attributes {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  border: 1px solid #c8c3b1;
+  margin-bottom: 15px;
+}
+.print-attributes > div {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 4px;
+  padding: 8px 2px;
+  border-right: 1px solid #c8c3b1;
+}
+.print-attributes > div:last-child {
+  border: 0;
+}
+.print-attributes span {
+  font-size: 8px;
+}
+.print-attributes strong {
+  font: 600 22px var(--serif);
+}
+.print-attributes small {
+  font-size: 8px;
+}
+.print-status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #c8c3b1;
+}
+.print-status span {
+  font-size: 10px;
+}
+.print-document section {
+  margin-top: 20px;
+}
+.print-document h2 {
+  font: 600 17px var(--serif);
+  padding-bottom: 7px;
+  border-bottom: 1px solid #c8c3b1;
+  margin-bottom: 10px;
+}
+.print-document h2 small {
+  font:
+    8px -apple-system,
+    BlinkMacSystemFont,
+    "PingFang SC",
+    sans-serif;
+  color: #64685e;
+}
+.print-skills {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 15px;
+}
+.print-skills > div {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-bottom: 1px solid #e3decc;
+  padding: 5px 0;
+  break-inside: avoid;
+}
+.print-skills span {
+  font-size: 9px;
+  flex: 1;
+}
+.print-skills b {
+  font-size: 11px;
+}
+.print-skills small {
+  font-size: 7px;
+  width: 37px;
+  text-align: right;
+}
+.print-weapon-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8px;
+}
+.print-weapon-table th,
+.print-weapon-table td {
+  text-align: left;
+  padding: 6px 4px;
+  border-bottom: 1px solid #c8c3b1;
+  overflow-wrap: anywhere;
+}
+.print-background-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 25px;
+  margin-bottom: 20px;
+}
+.print-background-grid article {
+  break-inside: avoid;
+}
+.print-background-grid h3 {
+  font-size: 10px;
+  font-weight: 500;
+  color: #64685e;
+  margin-bottom: 5px;
+}
+.print-document .prose {
+  font-size: 10px;
+}
+.print-document footer {
+  border-top: 1px solid #c8c3b1;
+  margin-top: 25px;
+  padding-top: 10px;
+  color: #64685e;
+  font-size: 8px;
+}
+@media (max-width: 580px) {
+  .print-view {
+    padding: 15px 8px;
+  }
+  .print-controls {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 0 8px;
+  }
+  .print-controls p {
+    order: 3;
+    flex-basis: 100%;
+  }
+  .print-controls .button {
+    flex: 1;
+  }
+  .print-document {
+    padding: 18px 12px;
+  }
+  .print-attributes {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .print-skills {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+  }
+  .print-background-grid {
+    grid-template-columns: 1fr;
+  }
+  .print-document-header h1 {
+    font-size: 26px;
+  }
+}
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+  :root,
+  :root[data-theme="dark"] {
+    color-scheme: light;
+  }
+  body {
+    background: #fff;
+  }
+  .app-sidebar,
+  .app-topbar,
+  .storage-error,
+  .print-controls,
+  .toast,
+  dialog {
+    display: none !important;
+  }
+  .app-workspace {
+    margin: 0;
+  }
+  .print-view {
+    padding: 0;
+  }
+  .print-document {
+    width: 100%;
+    max-width: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .print-attributes {
+    grid-template-columns: repeat(8, 1fr);
+  }
+  .print-skills {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .print-background-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .print-document h2 {
+    break-after: avoid;
+  }
+  .print-document-header,
+  .print-status,
+  .print-attributes,
+  .print-identity,
+  .print-weapon-table tr {
+    break-inside: avoid;
+  }
+  .print-document .prose {
+    orphans: 3;
+    widows: 3;
+  }
+  .print-document table thead {
+    display: table-header-group;
+  }
+  .print-document table tr {
+    break-inside: avoid;
+  }
+}
