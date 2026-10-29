@@ -16,6 +16,7 @@ import {
   readLegacySave,
 } from "../storage/repository";
 import { regenerateBackground } from "../ai/generateCharacter";
+import { PORTRAITS, loadPortrait } from "../components/art";
 import { Field, Icon, Modal } from "../components/ui";
 import Library from "../features/library/Library";
 import Creation from "../features/creation/Creation";
@@ -401,7 +402,13 @@ export default function App() {
       setImportBusy(false);
     }
   }
-  function createExample() {
+  async function createExample() {
+    let portrait = "";
+    try {
+      portrait = await loadPortrait(PORTRAITS[0].src);
+    } catch {
+      /* The example remains usable without its portrait. */
+    }
     let c = createCharacter({
       method: "manual",
       age: 32,
@@ -411,6 +418,7 @@ export default function App() {
     c = {
       ...c,
       name: "沈砚舟",
+      portrait,
       gender: "男",
       residence: "阿卡姆",
       birthplace: "上海",

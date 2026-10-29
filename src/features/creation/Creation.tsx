@@ -7,6 +7,7 @@ import type {
 } from "../../domain/types";
 import { createCharacter } from "../../domain/rules";
 import { generateCharacter } from "../../ai/generateCharacter";
+import { ART } from "../../components/art";
 import { Field, Icon, Modal } from "../../components/ui";
 
 export default function Creation({
@@ -100,6 +101,13 @@ export default function Creation({
     >
       <div className="creation-layout">
         <aside className="creation-aside">
+          <img
+            className="creation-desk-art"
+            src={ART.desk}
+            alt="灯下摆着旧照片、笔记本和放大镜的调查桌"
+            width={640}
+            height={960}
+          />
           <div className="creation-symbol">
             <Icon name="spark" size={38} />
           </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Character } from "../../domain/types";
 import { getCredit, getDerived, occupationName } from "../../domain/rules";
+import { ART } from "../../components/art";
 import { Icon, Portrait, formatDate } from "../../components/ui";
 
 interface Props {
@@ -78,6 +79,23 @@ export default function Library({
           <button className="text-link" onClick={onCreate}>
             创建一位新调查员 <Icon name="arrow" size={16} />
           </button>
+        </div>
+        <div className="archive-scene">
+          <picture>
+            <source media="(max-width: 580px)" srcSet={ART.streetSmall} />
+            <img
+              src={ART.street}
+              alt="雨夜的阿卡姆街道，钟楼与窗灯映在湿润的石板路上"
+              width={1440}
+              height={810}
+              fetchPriority="high"
+            />
+          </picture>
+          <span className="archive-scene-rain" aria-hidden="true" />
+          <div className="archive-scene-caption">
+            <span>阿卡姆，入夜之后</span>
+            <small>窗外的雨还没有停。</small>
+          </div>
         </div>
         {latest ? (
           <button className="recent-dossier" onClick={() => onOpen(latest.id)}>

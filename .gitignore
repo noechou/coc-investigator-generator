@@ -21,6 +21,7 @@ node_modules/
 dist/
 build/
 releases/
+art-source/
 *.tsbuildinfo
 .cache/
 

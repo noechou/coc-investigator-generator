@@ -220,306 +220,315 @@ export default function Play({
             </button>
           ))}
         </nav>
-        {tab === "character" && (
-          <>
-            <section className="character-overview">
-              <Portrait name={c.name} src={c.portrait} large />
-              <div>
-                <span className="overview-occupation">
-                  {occupationName(c)} / {c.age} 岁 / {c.era}
-                </span>
-                <h2>{c.name || "未命名调查员"}</h2>
-                <p>{c.concept || "这个人物的故事，尚待记录。"}</p>
-                <span className="overview-place">
-                  {[
-                    c.residence && `现居 ${c.residence}`,
-                    c.birthplace && `来自 ${c.birthplace}`,
-                  ]
-                    .filter(Boolean)
-                    .join(" / ") || "居住地未记录"}
-                </span>
-              </div>
-            </section>
-            <section className="play-section">
-              <div className="section-title">
-                <h2>常用技能</h2>
-                <button className="text-link" onClick={() => setTab("skills")}>
-                  查看全部 <Icon name="arrow" size={15} />
-                </button>
-              </div>
-              <p className="section-description">
-                点击数值即可检定。可在技能页固定常用项。
-              </p>
-              <div className="quick-skills">
-                {frequent.map((s) => (
+        <div key={tab} className="play-page-content">
+          {tab === "character" && (
+            <>
+              <section className="character-overview">
+                <Portrait name={c.name} src={c.portrait} large />
+                <div>
+                  <span className="overview-occupation">
+                    {occupationName(c)} / {c.age} 岁 / {c.era}
+                  </span>
+                  <h2>{c.name || "未命名调查员"}</h2>
+                  <p>{c.concept || "这个人物的故事，尚待记录。"}</p>
+                  <span className="overview-place">
+                    {[
+                      c.residence && `现居 ${c.residence}`,
+                      c.birthplace && `来自 ${c.birthplace}`,
+                    ]
+                      .filter(Boolean)
+                      .join(" / ") || "居住地未记录"}
+                  </span>
+                </div>
+              </section>
+              <section className="play-section">
+                <div className="section-title">
+                  <h2>常用技能</h2>
                   <button
-                    className="quick-skill"
-                    key={s.id}
-                    onClick={() => check(s.name, skillTotal(s, c))}
+                    className="text-link"
+                    onClick={() => setTab("skills")}
                   >
-                    <span>{s.name}</span>
-                    <strong>{skillTotal(s, c)}</strong>
-                    <small>
-                      {Math.floor(skillTotal(s, c) / 2)} /{" "}
-                      {Math.floor(skillTotal(s, c) / 5)}
-                    </small>
-                    <Icon name="dice" size={17} />
+                    查看全部 <Icon name="arrow" size={15} />
                   </button>
-                ))}
-              </div>
-            </section>
-            <section className="play-section">
-              <div className="section-title">
-                <h2>基础属性</h2>
-                <span>点击检定</span>
-              </div>
-              <div className="play-attributes">
-                {ATTRIBUTE_KEYS.map((key) => (
-                  <button
-                    key={key}
-                    onClick={() => check(ATTRIBUTE_LABELS[key], c.attrs[key])}
-                  >
-                    <span>
-                      {ATTRIBUTE_LABELS[key]}
-                      <small>{key.toUpperCase()}</small>
-                    </span>
-                    <strong>{c.attrs[key]}</strong>
-                    <small>
-                      {Math.floor(c.attrs[key] / 2)} /{" "}
-                      {Math.floor(c.attrs[key] / 5)}
-                    </small>
-                  </button>
-                ))}
-              </div>
-              <div className="derived-summary">
-                <span>
-                  伤害加值 <b>{derived.db}</b>
-                </span>
-                <span>
-                  体格 <b>{derived.build}</b>
-                </span>
-                <span>
-                  移动 <b>{derived.mov}</b>
-                </span>
-                <span>
-                  信用 <b>{getCredit(c)}</b>
-                </span>
-              </div>
-            </section>
-            <section className="play-section">
-              <div className="section-title">
-                <h2>人物背景</h2>
-              </div>
-              {c.story && <p className="prose story-preview">{c.story}</p>}
-              <div className="background-view-grid">
-                {BACKSTORY_KEYS.filter((key) => c.backstory[key]).map((key) => (
-                  <article key={key}>
-                    <h3>{BACKSTORY_LABELS[key]}</h3>
-                    <p className="prose">{c.backstory[key]}</p>
-                  </article>
-                ))}
-              </div>
-              {!c.story && !BACKSTORY_KEYS.some((k) => c.backstory[k]) && (
-                <p className="help-text">
-                  尚未填写背景，可以在编辑档案中补充。
+                </div>
+                <p className="section-description">
+                  点击数值即可检定。可在技能页固定常用项。
                 </p>
-              )}
-            </section>
-          </>
-        )}
-        {tab === "skills" && (
-          <section className="play-section skill-play-section">
-            <div className="section-title">
-              <h2>技能</h2>
-              <span>常规 / 困难 / 极难</span>
-            </div>
-            <label className="search-box">
-              <Icon name="search" size={18} />
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="查找技能，如侦查、聆听"
-                aria-label="查找跑团技能"
-              />
-            </label>
-            <div className="filter-chips">
-              {[
-                ["all", "全部"],
-                ["pinned", "常用"],
-                ["occupation", "职业技能"],
-              ].map(([value, label]) => (
-                <button
-                  className={skillFilter === value ? "active" : ""}
-                  onClick={() => setSkillFilter(value)}
-                  key={value}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            <div className="play-skill-list">
-              {rows.map((s) => (
-                <div className="play-skill-row" key={s.id}>
-                  <button
-                    className={`icon-button pin-button ${s.pinned ? "pinned" : ""}`}
-                    aria-label={`${s.pinned ? "取消固定" : "固定"}${s.name}`}
-                    aria-pressed={s.pinned}
-                    onClick={() => togglePin(s.id)}
-                  >
-                    <Icon name="pin" size={17} />
-                  </button>
-                  <button
-                    className="skill-roll-button"
-                    onClick={() => check(s.name, skillTotal(s, c))}
-                  >
-                    <span>
-                      {s.name}
-                      {s.occupationSelected && <small>职业</small>}
-                    </span>
-                    <strong>{skillTotal(s, c)}</strong>
-                    <small>{Math.floor(skillTotal(s, c) / 2)}</small>
-                    <small>{Math.floor(skillTotal(s, c) / 5)}</small>
-                    <Icon name="dice" size={19} />
-                  </button>
+                <div className="quick-skills">
+                  {frequent.map((s) => (
+                    <button
+                      className="quick-skill"
+                      key={s.id}
+                      onClick={() => check(s.name, skillTotal(s, c))}
+                    >
+                      <span>{s.name}</span>
+                      <strong>{skillTotal(s, c)}</strong>
+                      <small>
+                        {Math.floor(skillTotal(s, c) / 2)} /{" "}
+                        {Math.floor(skillTotal(s, c) / 5)}
+                      </small>
+                      <Icon name="dice" size={17} />
+                    </button>
+                  ))}
                 </div>
-              ))}
-            </div>
-            {!rows.length && (
-              <p className="empty-inline">没有符合条件的技能。</p>
-            )}
-          </section>
-        )}
-        {tab === "equipment" && (
-          <>
-            <section className="play-section">
-              <div className="section-title">
-                <h2>武器</h2>
-                <span>成功率随关联技能更新</span>
-              </div>
-              {c.weapons.map((w) => (
-                <div className="weapon-play" key={w.id}>
-                  <div>
-                    <h3>{w.name}</h3>
-                    <span>{w.skillName}</span>
-                  </div>
-                  <button
-                    className="button"
-                    onClick={() => check(w.name, weaponValue(w, c))}
-                  >
-                    <Icon name="dice" size={18} />
-                    {weaponValue(w, c)} 检定
-                  </button>
-                  <dl>
-                    <div>
-                      <dt>伤害</dt>
-                      <dd>{w.damage || "—"}</dd>
-                    </div>
-                    <div>
-                      <dt>射程</dt>
-                      <dd>{w.range || "—"}</dd>
-                    </div>
-                    <div>
-                      <dt>弹药</dt>
-                      <dd>{w.ammo || "—"}</dd>
-                    </div>
-                    <div>
-                      <dt>故障</dt>
-                      <dd>{w.malfunction || "—"}</dd>
-                    </div>
-                  </dl>
+              </section>
+              <section className="play-section">
+                <div className="section-title">
+                  <h2>基础属性</h2>
+                  <span>点击检定</span>
                 </div>
-              ))}
-              {!c.weapons.length && <p className="help-text">尚未记录武器。</p>}
-            </section>
-            <section className="play-section">
-              <h2>随身物品</h2>
-              <p className="prose">{c.possessions || "未记录"}</p>
-            </section>
-            <section className="play-section">
-              <h2>资产</h2>
-              <div className="derived-summary">
-                <span>
-                  信用 <b>{getCredit(c)}</b>
-                </span>
-                <span>
-                  现金 <b>{c.assetCash || "—"}</b>
-                </span>
-                <span>
-                  消费 <b>{c.assetSpending || "—"}</b>
-                </span>
-              </div>
-              <p className="prose">{c.assetDetails}</p>
-            </section>
-          </>
-        )}
-        {tab === "logs" && (
-          <>
-            <section className="play-section">
-              <div className="section-title">
-                <h2>调查笔记</h2>
-                <span>自动保存</span>
-              </div>
-              <textarea
-                rows={7}
-                value={c.notes}
-                onChange={(e) => onChange({ ...c, notes: e.target.value })}
-                placeholder="线索、待办、人物关系，还有暂时说不清的事。"
-                aria-label="调查笔记"
-              />
-            </section>
-            <section className="play-section">
-              <div className="section-title">
-                <h2>检定与状态记录</h2>
-                <button
-                  className="button small"
-                  onClick={onUndo}
-                  disabled={!canUndo}
-                >
-                  <Icon name="undo" size={15} />
-                  撤销上次状态调整
-                </button>
-              </div>
-              <div className="full-log">
-                {c.logs.map((log) => (
-                  <article key={log.id} className="log-entry">
-                    <div>
-                      <span>{formatTime(log.at)}</span>
-                      <h3>{log.title}</h3>
-                      <strong
-                        className={log.outcome === "大失败" ? "danger" : ""}
-                      >
-                        {log.result !== undefined ? `${log.result} · ` : ""}
-                        {log.outcome || ""}
-                      </strong>
-                    </div>
-                    <p>{log.detail}</p>
-                    <input
-                      value={log.annotation || ""}
-                      aria-label={`${log.title}的备注`}
-                      placeholder="为这条记录补充备注…"
-                      onChange={(e) =>
-                        onChange({
-                          ...c,
-                          logs: c.logs.map((l) =>
-                            l.id === log.id
-                              ? { ...l, annotation: e.target.value }
-                              : l,
-                          ),
-                        })
-                      }
-                    />
-                  </article>
-                ))}
-                {!c.logs.length && (
-                  <p className="empty-inline">
-                    第一次检定之后，记录会留在这里。
+                <div className="play-attributes">
+                  {ATTRIBUTE_KEYS.map((key) => (
+                    <button
+                      key={key}
+                      onClick={() => check(ATTRIBUTE_LABELS[key], c.attrs[key])}
+                    >
+                      <span>
+                        {ATTRIBUTE_LABELS[key]}
+                        <small>{key.toUpperCase()}</small>
+                      </span>
+                      <strong>{c.attrs[key]}</strong>
+                      <small>
+                        {Math.floor(c.attrs[key] / 2)} /{" "}
+                        {Math.floor(c.attrs[key] / 5)}
+                      </small>
+                    </button>
+                  ))}
+                </div>
+                <div className="derived-summary">
+                  <span>
+                    伤害加值 <b>{derived.db}</b>
+                  </span>
+                  <span>
+                    体格 <b>{derived.build}</b>
+                  </span>
+                  <span>
+                    移动 <b>{derived.mov}</b>
+                  </span>
+                  <span>
+                    信用 <b>{getCredit(c)}</b>
+                  </span>
+                </div>
+              </section>
+              <section className="play-section">
+                <div className="section-title">
+                  <h2>人物背景</h2>
+                </div>
+                {c.story && <p className="prose story-preview">{c.story}</p>}
+                <div className="background-view-grid">
+                  {BACKSTORY_KEYS.filter((key) => c.backstory[key]).map(
+                    (key) => (
+                      <article key={key}>
+                        <h3>{BACKSTORY_LABELS[key]}</h3>
+                        <p className="prose">{c.backstory[key]}</p>
+                      </article>
+                    ),
+                  )}
+                </div>
+                {!c.story && !BACKSTORY_KEYS.some((k) => c.backstory[k]) && (
+                  <p className="help-text">
+                    尚未填写背景，可以在编辑档案中补充。
                   </p>
                 )}
+              </section>
+            </>
+          )}
+          {tab === "skills" && (
+            <section className="play-section skill-play-section">
+              <div className="section-title">
+                <h2>技能</h2>
+                <span>常规 / 困难 / 极难</span>
               </div>
+              <label className="search-box">
+                <Icon name="search" size={18} />
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="查找技能，如侦查、聆听"
+                  aria-label="查找跑团技能"
+                />
+              </label>
+              <div className="filter-chips">
+                {[
+                  ["all", "全部"],
+                  ["pinned", "常用"],
+                  ["occupation", "职业技能"],
+                ].map(([value, label]) => (
+                  <button
+                    className={skillFilter === value ? "active" : ""}
+                    onClick={() => setSkillFilter(value)}
+                    key={value}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div className="play-skill-list">
+                {rows.map((s) => (
+                  <div className="play-skill-row" key={s.id}>
+                    <button
+                      className={`icon-button pin-button ${s.pinned ? "pinned" : ""}`}
+                      aria-label={`${s.pinned ? "取消固定" : "固定"}${s.name}`}
+                      aria-pressed={s.pinned}
+                      onClick={() => togglePin(s.id)}
+                    >
+                      <Icon name="pin" size={17} />
+                    </button>
+                    <button
+                      className="skill-roll-button"
+                      onClick={() => check(s.name, skillTotal(s, c))}
+                    >
+                      <span>
+                        {s.name}
+                        {s.occupationSelected && <small>职业</small>}
+                      </span>
+                      <strong>{skillTotal(s, c)}</strong>
+                      <small>{Math.floor(skillTotal(s, c) / 2)}</small>
+                      <small>{Math.floor(skillTotal(s, c) / 5)}</small>
+                      <Icon name="dice" size={19} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              {!rows.length && (
+                <p className="empty-inline">没有符合条件的技能。</p>
+              )}
             </section>
-          </>
-        )}
+          )}
+          {tab === "equipment" && (
+            <>
+              <section className="play-section">
+                <div className="section-title">
+                  <h2>武器</h2>
+                  <span>成功率随关联技能更新</span>
+                </div>
+                {c.weapons.map((w) => (
+                  <div className="weapon-play" key={w.id}>
+                    <div>
+                      <h3>{w.name}</h3>
+                      <span>{w.skillName}</span>
+                    </div>
+                    <button
+                      className="button"
+                      onClick={() => check(w.name, weaponValue(w, c))}
+                    >
+                      <Icon name="dice" size={18} />
+                      {weaponValue(w, c)} 检定
+                    </button>
+                    <dl>
+                      <div>
+                        <dt>伤害</dt>
+                        <dd>{w.damage || "—"}</dd>
+                      </div>
+                      <div>
+                        <dt>射程</dt>
+                        <dd>{w.range || "—"}</dd>
+                      </div>
+                      <div>
+                        <dt>弹药</dt>
+                        <dd>{w.ammo || "—"}</dd>
+                      </div>
+                      <div>
+                        <dt>故障</dt>
+                        <dd>{w.malfunction || "—"}</dd>
+                      </div>
+                    </dl>
+                  </div>
+                ))}
+                {!c.weapons.length && (
+                  <p className="help-text">尚未记录武器。</p>
+                )}
+              </section>
+              <section className="play-section">
+                <h2>随身物品</h2>
+                <p className="prose">{c.possessions || "未记录"}</p>
+              </section>
+              <section className="play-section">
+                <h2>资产</h2>
+                <div className="derived-summary">
+                  <span>
+                    信用 <b>{getCredit(c)}</b>
+                  </span>
+                  <span>
+                    现金 <b>{c.assetCash || "—"}</b>
+                  </span>
+                  <span>
+                    消费 <b>{c.assetSpending || "—"}</b>
+                  </span>
+                </div>
+                <p className="prose">{c.assetDetails}</p>
+              </section>
+            </>
+          )}
+          {tab === "logs" && (
+            <>
+              <section className="play-section">
+                <div className="section-title">
+                  <h2>调查笔记</h2>
+                  <span>自动保存</span>
+                </div>
+                <textarea
+                  rows={7}
+                  value={c.notes}
+                  onChange={(e) => onChange({ ...c, notes: e.target.value })}
+                  placeholder="线索、待办、人物关系，还有暂时说不清的事。"
+                  aria-label="调查笔记"
+                />
+              </section>
+              <section className="play-section">
+                <div className="section-title">
+                  <h2>检定与状态记录</h2>
+                  <button
+                    className="button small"
+                    onClick={onUndo}
+                    disabled={!canUndo}
+                  >
+                    <Icon name="undo" size={15} />
+                    撤销上次状态调整
+                  </button>
+                </div>
+                <div className="full-log">
+                  {c.logs.map((log) => (
+                    <article key={log.id} className="log-entry">
+                      <div>
+                        <span>{formatTime(log.at)}</span>
+                        <h3>{log.title}</h3>
+                        <strong
+                          className={log.outcome === "大失败" ? "danger" : ""}
+                        >
+                          {log.result !== undefined ? `${log.result} · ` : ""}
+                          {log.outcome || ""}
+                        </strong>
+                      </div>
+                      <p>{log.detail}</p>
+                      <input
+                        value={log.annotation || ""}
+                        aria-label={`${log.title}的备注`}
+                        placeholder="为这条记录补充备注…"
+                        onChange={(e) =>
+                          onChange({
+                            ...c,
+                            logs: c.logs.map((l) =>
+                              l.id === log.id
+                                ? { ...l, annotation: e.target.value }
+                                : l,
+                            ),
+                          })
+                        }
+                      />
+                    </article>
+                  ))}
+                  {!c.logs.length && (
+                    <p className="empty-inline">
+                      第一次检定之后，记录会留在这里。
+                    </p>
+                  )}
+                </div>
+              </section>
+            </>
+          )}
+        </div>
       </div>
       <aside className="roll-sidebar">
         <section className="roll-panel">
@@ -541,7 +550,8 @@ export default function Play({
             </select>
           </label>
           <div
-            className={`latest-roll ${last?.outcome === "大失败" ? "roll-fumble" : ""}`}
+            key={last?.id ?? "no-roll"}
+            className={`latest-roll ${last ? "roll-reveal" : ""} ${last?.outcome === "大失败" ? "roll-fumble" : ""}`}
             aria-live="polite"
           >
             {last ? (
@@ -626,7 +636,7 @@ export default function Play({
       {checkResult && (
         <Modal title={checkResult.title} onClose={() => setCheckResult(null)}>
           <div
-            className={`latest-roll ${checkResult.outcome === "大失败" ? "roll-fumble" : ""}`}
+            className={`latest-roll roll-reveal ${checkResult.outcome === "大失败" ? "roll-fumble" : ""}`}
           >
             <span>检定结果</span>
             <strong>{checkResult.roll}</strong>

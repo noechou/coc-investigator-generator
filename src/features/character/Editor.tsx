@@ -17,6 +17,7 @@ import {
   weaponValue,
 } from "../../domain/rules";
 import { autoAllocate, selectOccupation } from "../../domain/allocation";
+import { PORTRAITS, loadPortrait } from "../../components/art";
 import { Field, Icon } from "../../components/ui";
 
 type Props = {
@@ -34,6 +35,7 @@ export default function Editor({
   const [section, setSection] = useState("identity");
   const [query, setQuery] = useState("");
   const [onlySelected, setOnlySelected] = useState(false);
+  const [portraitBusy, setPortraitBusy] = useState<string | null>(null);
   const photo = useRef<HTMLInputElement>(null);
   const latest = useRef(c);
   latest.current = c;
@@ -87,6 +89,7 @@ export default function Editor({
       return;
     }
     const job = ++uploadJob.current;
+    setPortraitBusy(null);
     try {
       const image = await createImageBitmap(file);
       if (job !== uploadJob.current) {
@@ -107,6 +110,19 @@ export default function Editor({
       });
     } catch {
       onToast("图片读取失败，请换一张图片。");
+    }
+  }
+  async function choosePortrait(preset: (typeof PORTRAITS)[number]) {
+    const job = ++uploadJob.current;
+    setPortraitBusy(preset.id);
+    try {
+      const portrait = await loadPortrait(preset.src);
+      if (job === uploadJob.current) onChange({ ...latest.current, portrait });
+    } catch (error) {
+      if (job === uploadJob.current)
+        onToast(error instanceof Error ? error.message : "肖像读取失败。");
+    } finally {
+      if (job === uploadJob.current) setPortraitBusy(null);
     }
   }
   function changeOccupation(id: string) {
@@ -172,7 +188,7 @@ export default function Editor({
           </button>
         ))}
       </nav>
-      <div className="editor-content">
+      <div className="editor-content" key={section}>
         {c.phase === "draft" && (
           <div className="draft-note">
             <Icon name="edit" size={18} />
@@ -197,6 +213,7 @@ export default function Editor({
                       className="text-link"
                       onClick={() => {
                         uploadJob.current += 1;
+                        setPortraitBusy(null);
                         patch({ portrait: "" });
                       }}
                     >
@@ -214,6 +231,34 @@ export default function Editor({
                     e.target.value = "";
                   }}
                 />
+              </div>
+              <div className="portrait-picker" aria-label="预设档案肖像">
+                <div className="portrait-picker-copy">
+                  <strong>选一张档案照</strong>
+                  <span>也可以上传自己的头像</span>
+                </div>
+                <div className="portrait-presets">
+                  {PORTRAITS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => void choosePortrait(preset)}
+                      disabled={portraitBusy !== null}
+                      aria-label={`使用${preset.label}肖像`}
+                    >
+                      <img
+                        src={preset.src}
+                        alt=""
+                        width={52}
+                        height={68}
+                        loading="lazy"
+                      />
+                      <span>
+                        {portraitBusy === preset.id ? "读取中…" : preset.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="form-grid">
                 <Field label="姓名">
