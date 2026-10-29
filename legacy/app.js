@@ -42,9 +42,9 @@ let aiModelMode = "flash";
 const AGE_RULES = [
   { min: 15, max: 19, label: "15–19 岁", physicalKeys: ["str", "siz"], physicalDeduction: 5, eduPenalty: 5, eduChecks: 0, appDeduction: 0, luckReroll: true },
   { min: 20, max: 29, label: "20–29 岁", physicalKeys: [], physicalDeduction: 0, eduPenalty: 0, eduChecks: 1, appDeduction: 0, luckReroll: false },
-  { min: 30, max: 39, label: "30–39 岁", physicalKeys: [], physicalDeduction: 0, eduPenalty: 0, eduChecks: 2, appDeduction: 0, luckReroll: false },
-  { min: 40, max: 49, label: "40–49 岁", physicalKeys: ["str", "con", "dex"], physicalDeduction: 5, eduPenalty: 0, eduChecks: 3, appDeduction: 5, luckReroll: false },
-  { min: 50, max: 59, label: "50–59 岁", physicalKeys: ["str", "con", "dex"], physicalDeduction: 10, eduPenalty: 0, eduChecks: 4, appDeduction: 10, luckReroll: false },
+  { min: 30, max: 39, label: "30–39 岁", physicalKeys: [], physicalDeduction: 0, eduPenalty: 0, eduChecks: 1, appDeduction: 0, luckReroll: false },
+  { min: 40, max: 49, label: "40–49 岁", physicalKeys: ["str", "con", "dex"], physicalDeduction: 5, eduPenalty: 0, eduChecks: 2, appDeduction: 5, luckReroll: false },
+  { min: 50, max: 59, label: "50–59 岁", physicalKeys: ["str", "con", "dex"], physicalDeduction: 10, eduPenalty: 0, eduChecks: 3, appDeduction: 10, luckReroll: false },
   { min: 60, max: 69, label: "60–69 岁", physicalKeys: ["str", "con", "dex"], physicalDeduction: 20, eduPenalty: 0, eduChecks: 4, appDeduction: 15, luckReroll: false },
   { min: 70, max: 79, label: "70–79 岁", physicalKeys: ["str", "con", "dex"], physicalDeduction: 40, eduPenalty: 0, eduChecks: 4, appDeduction: 20, luckReroll: false },
   { min: 80, max: Infinity, label: "80 岁及以上", physicalKeys: ["str", "con", "dex"], physicalDeduction: 80, eduPenalty: 0, eduChecks: 4, appDeduction: 25, luckReroll: false },
@@ -464,7 +464,7 @@ function renderResults() {
   $("#resultCount").textContent = results.length;
   $("#emptyState").hidden = results.length > 0;
   $("#clearResults").disabled = results.length === 0;
-  $("#createFullSheet").disabled = results.length === 0;
+  $("#createFullSheet").disabled = results.length === 0 && !activeSheetData;
   $("#resultsGrid").innerHTML = results
     .map((snapshot, index) => resultCardTemplate(snapshot, results.length - index))
     .join("");
@@ -722,7 +722,7 @@ const OCCUPATIONS = [
 
 function normalizeSkill(skill, attrs, index) {
   const template = BASE_SKILLS[index];
-  let base = skill.base ?? template?.[1] ?? 0;
+  let base = Math.max(0, toNumber(skill.base, toNumber(template?.[1])));
   if (template?.[1] === "dodge") base = Math.floor(attrs.dex / 2);
   if (template?.[1] === "ownLanguage") base = attrs.edu;
   const legacyValue = Math.max(base, toNumber(skill.value, base));
@@ -1576,7 +1576,7 @@ function skillRowTemplate(skill, index) {
     <div class="skill-row${skill.occupationSelected ? " is-occupation-skill" : ""}" data-skill-index="${index}">
       <button class="occupation-skill-toggle" type="button" data-toggle-occupation-skill="${index}" aria-pressed="${skill.occupationSelected}" ${skill.occupationLocked || isMythos ? "disabled" : ""} aria-label="${escapeHtml(skill.name)}设为职业技能">✓</button>
       <div class="skill-name">${nameMarkup}</div>
-      <span class="skill-base">${skill.base}</span>
+      <span class="skill-base">${escapeHtml(skill.base)}</span>
       <input class="skill-point-input skill-occupation" data-skill-points="occupationPoints" type="number" min="0" max="99" value="${skill.occupationPoints}" ${occupationDisabled ? "disabled" : ""} aria-label="${escapeHtml(skill.name)}职业点" />
       <input class="skill-point-input skill-interest" data-skill-points="interestPoints" type="number" min="0" max="99" value="${skill.interestPoints}" ${isMythos ? "disabled" : ""} aria-label="${escapeHtml(skill.name)}兴趣点" />
       <input class="skill-point-input skill-growth" data-skill-points="growthPoints" type="number" min="0" max="999" value="${skill.growthPoints}" aria-label="${escapeHtml(skill.name)}成长点" />
@@ -1815,13 +1815,13 @@ function normalizeImportedSheetData(raw) {
     derived,
     skills: Array.isArray(raw.skills) ? raw.skills.map((skill) => ({ ...skill })) : buildInitialSkills(attrs),
     weapons: importedWeapons.length ? importedWeapons : defaultWeapons(),
-    possessions: limitText(raw.possessions, 900),
+    possessions: String(raw.possessions ?? ""),
     assetCredit: limitText(raw.assetCredit, 20),
     assetCash: limitText(raw.assetCash, 80),
     assetSpending: limitText(raw.assetSpending, 80),
-    assetDetails: limitText(raw.assetDetails, 900),
-    ...Object.fromEntries(BACKSTORY_DETAIL_FIELDS.map(([key]) => [key, limitText(raw[key], 600)])),
-    story: limitText(raw.story, 3000),
+    assetDetails: String(raw.assetDetails ?? ""),
+    ...Object.fromEntries(BACKSTORY_DETAIL_FIELDS.map(([key]) => [key, String(raw[key] ?? "")])),
+    story: String(raw.story ?? ""),
     source: limitText(raw.source, 40) || "imported",
     aiAutoPrompted: Boolean(raw.aiAutoPrompted),
     savedAt: null,
@@ -2169,6 +2169,10 @@ $("#resultsGrid").addEventListener("click", async (event) => {
 });
 
 $("#createFullSheet").addEventListener("click", () => {
+  if (activeSheetData && !window.confirm("创建新角色卡将替换当前内容，请先保存或导出。点击“取消”继续编辑原角色卡，点击“确定”创建新卡。")) {
+    switchAppView(true);
+    return;
+  }
   if (!results.length) {
     showToast("请先生成至少一张属性卡");
     return;
@@ -2181,7 +2185,10 @@ $("#createFullSheet").addEventListener("click", () => {
   }
 });
 
-$("#backToGenerator").addEventListener("click", () => switchAppView(false));
+$("#backToGenerator").addEventListener("click", () => {
+  renderResults();
+  switchAppView(false);
+});
 
 $("#fullSheetView").addEventListener("input", markSheetDirty);
 
