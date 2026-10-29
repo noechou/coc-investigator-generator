@@ -1,0 +1,176 @@
+{
+  "capturedAt": "2026-10-29T11:59:03.140Z",
+  "revision": "5c5c370",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "pixelRatio": 1,
+  "format": "PNG",
+  "animations": "静态截图，动画已停在稳定状态",
+  "data": "隔离浏览器中的虚构示例，未使用真实密钥或真实 AI 调用",
+  "screenshots": [
+    {
+      "file": "01-library-paper.png",
+      "title": "档案库 · 纸质",
+      "description": "首页街景、最近角色、档案卡与新建入口。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/"
+    },
+    {
+      "file": "02-library-dark.png",
+      "title": "档案库 · 深色",
+      "description": "相同档案库的深色工作台主题。",
+      "theme": "dark",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/"
+    },
+    {
+      "file": "03-create-ai-paper.png",
+      "title": "AI 建卡",
+      "description": "完整建卡弹窗、调查桌美术、人物概念与服务设置入口。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/"
+    },
+    {
+      "file": "04-create-random-paper.png",
+      "title": "规则掷骰建卡",
+      "description": "随机创建方式与展开的建卡规则。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/"
+    },
+    {
+      "file": "05-create-ai-dark.png",
+      "title": "AI 建卡 · 深色",
+      "description": "深色主题的建卡弹窗与调查桌静物。",
+      "theme": "dark",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/"
+    },
+    {
+      "file": "06-play-character-paper.png",
+      "title": "跑团 · 角色",
+      "description": "状态、档案肖像、常用技能、基础属性及检定台。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/play"
+    },
+    {
+      "file": "07-play-character-dark.png",
+      "title": "跑团 · 深色",
+      "description": "深色角色面板与最近检定记录。",
+      "theme": "dark",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/play"
+    },
+    {
+      "file": "08-play-skills-paper.png",
+      "title": "跑团 · 技能",
+      "description": "技能搜索、常用筛选、困难与极难值。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/play"
+    },
+    {
+      "file": "09-play-equipment-paper.png",
+      "title": "跑团 · 装备",
+      "description": "武器检定、随身物品与资产。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/play"
+    },
+    {
+      "file": "10-play-notes-paper.png",
+      "title": "跑团 · 记录",
+      "description": "调查笔记、状态变化与骰点历史。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/play"
+    },
+    {
+      "file": "11-edit-identity-paper.png",
+      "title": "编辑 · 身份属性",
+      "description": "预设肖像、姓名、人物概念和基础属性编辑。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/edit"
+    },
+    {
+      "file": "12-edit-skills-paper.png",
+      "title": "编辑 · 职业技能",
+      "description": "职业选择、点数预算和技能分配。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/edit"
+    },
+    {
+      "file": "13-edit-equipment-paper.png",
+      "title": "编辑 · 装备资产",
+      "description": "武器关联技能、伤害与资产编辑。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/edit"
+    },
+    {
+      "file": "14-edit-backstory-paper.png",
+      "title": "编辑 · 人物背景",
+      "description": "人物背景细项、完整故事与 AI 重写入口。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/edit"
+    },
+    {
+      "file": "15-ai-settings-paper.png",
+      "title": "AI 服务设置",
+      "description": "服务地址、模型名称与空白密钥输入框，不含真实密钥。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/edit"
+    },
+    {
+      "file": "16-print-paper.png",
+      "title": "打印预览",
+      "description": "A4 角色摘要在浏览器中的预览；此截图不是整份 PDF。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/print"
+    },
+    {
+      "file": "17-import-paper.png",
+      "title": "导入确认",
+      "description": "已有角色的导入预览，默认另存副本。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/character/character-e628d3e1-d244-4138-8896-2c24f827493d/play"
+    },
+    {
+      "file": "18-draft-paper.png",
+      "title": "建卡草稿",
+      "description": "草稿提示、完成建卡入口、肖像选择和身份填写。",
+      "theme": "paper",
+      "width": 1920,
+      "height": 1080,
+      "route": "#/character/character-34e6c6f2-aec8-49b2-9e1e-f2cd834d9f09/edit"
+    }
+  ]
+}
