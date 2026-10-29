@@ -1,10 +1,40 @@
+import libraryHero from "../assets/art/library-hero.jpg";
+import creationRitual from "../assets/art/creation-ritual.jpg";
+import veil from "../assets/art/veil.jpg";
+import sigil from "../assets/art/sigil.png";
+import waxSeal from "../assets/art/wax-seal.png";
+import emptyTome from "../assets/art/empty-tome.png";
+import divider from "../assets/art/divider.png";
+import paperclip from "../assets/art/paperclip.png";
+import tape from "../assets/art/tape.png";
+import emblemHp from "../assets/art/emblem-hp.png";
+import emblemMp from "../assets/art/emblem-mp.png";
+import emblemSan from "../assets/art/emblem-san.png";
+import emblemLuck from "../assets/art/emblem-luck.png";
+
 const base = import.meta.env.BASE_URL;
 
 export const ART = {
   street: `${base}art/arkham-rain.jpg`,
   streetSmall: `${base}art/arkham-rain-small.jpg`,
   desk: `${base}art/investigation-desk.jpg`,
+  libraryHero,
+  creationRitual,
+  veil,
+  sigil,
+  waxSeal,
+  emptyTome,
+  divider,
+  paperclip,
+  tape,
 };
+
+export const EMBLEMS = {
+  hp: emblemHp,
+  mp: emblemMp,
+  san: emblemSan,
+  luck: emblemLuck,
+} as const;
 
 export const PORTRAITS = [
   {

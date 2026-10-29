@@ -16,13 +16,14 @@ import {
   readLegacySave,
 } from "../storage/repository";
 import { regenerateBackground } from "../ai/generateCharacter";
-import { PORTRAITS, loadPortrait } from "../components/art";
+import { ART, PORTRAITS, loadPortrait } from "../components/art";
 import { Field, Icon, Modal } from "../components/ui";
 import Library from "../features/library/Library";
 import Creation from "../features/creation/Creation";
 import Editor from "../features/character/Editor";
 import Play from "../features/play/Play";
 import PrintSheet from "../features/print/PrintSheet";
+import VeilReveal from "../components/VeilReveal";
 
 type Route = { id: string | null; mode: "play" | "edit" | "print" };
 function readRoute(): Route {
@@ -97,6 +98,8 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [settings, setSettings] = useState<AiSettings>(savedSettings);
   const [creation, setCreation] = useState(false);
+  const [reveal, setReveal] = useState<string | null>(null);
+  const endReveal = useCallback(() => setReveal(null), []);
   const [imported, setImported] = useState<{
     characters: Character[];
     warnings: string[];
@@ -582,7 +585,7 @@ export default function App() {
       <aside className="app-sidebar">
         <a className="brand" href="#/" aria-label="回到调查员档案库">
           <span className="brand-emblem">
-            <Icon name="archive" size={24} />
+            <img src={ART.sigil} alt="" />
           </span>
           <span>
             调查员档案<small>克苏鲁的呼唤 7 版</small>
@@ -876,7 +879,7 @@ export default function App() {
           )
         ) : (
           <main className="empty-state">
-            <Icon name="folder" size={40} />
+            <img className="empty-art" src={ART.emptyTome} alt="" />
             <h1>{loading ? "正在读取档案…" : "找不到这位调查员"}</h1>
             <p>
               {loading ? "请稍候。" : "档案可能已删除，或位于另一个浏览器。"}
@@ -906,6 +909,7 @@ export default function App() {
           onCreated={(c) => {
             setCreation(false);
             add(c);
+            if (c.method !== "manual") setReveal(c.name || "新的调查员");
           }}
         />
       )}
@@ -1115,6 +1119,7 @@ export default function App() {
           </div>
         </Modal>
       )}
+      {reveal && <VeilReveal title={reveal} onDone={endReveal} />}
       {toast && (
         <div className="toast" role="status">
           <Icon name="info" size={17} />

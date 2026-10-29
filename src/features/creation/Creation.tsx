@@ -103,10 +103,10 @@ export default function Creation({
         <aside className="creation-aside">
           <img
             className="creation-desk-art"
-            src={ART.desk}
-            alt="灯下摆着旧照片、笔记本和放大镜的调查桌"
-            width={640}
-            height={960}
+            src={ART.creationRitual}
+            alt="烛光下一张空白的人员档案，纸上的烟雾隐约聚成人形"
+            width={800}
+            height={1200}
           />
           <div className="creation-symbol">
             <Icon name="spark" size={38} />
