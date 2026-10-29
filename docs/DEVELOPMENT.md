@@ -38,7 +38,7 @@ npm run preview
 
 仓库已有 [发布工作流](../.github/workflows/pages.yml)：推送 `main` 或手动触发后，安装依赖、运行已有测试、构建 `dist/` 并发布。
 
-**当前仓库仍沿用旧版分支发布方式。** 发布新版前，需要在 GitHub 仓库的 Settings → Pages 中，把 Source 改为 **GitHub Actions**。不要直接发布源码根目录；源码中的 TypeScript 模块需要先构建。
+Pages 的发布源使用 **GitHub Actions**：在 GitHub 仓库的 Settings → Pages 中设置 Source。不要直接发布源码根目录；源码中的 TypeScript 模块需要先构建。
 
 Pages 地址继续使用：
 
