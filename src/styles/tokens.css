@@ -1,3 +1,4 @@
+/* 案卷（日间）与烛光暗室（夜间）两套主题共用一组令牌。 */
 :root {
   font-family:
     -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC",
@@ -6,41 +7,63 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   --serif:
-    "Iowan Old Style", "Palatino Linotype", "Songti SC", "Noto Serif SC", serif;
-  --paper: #ece5d3;
-  --surface: #f8f4e8;
-  --surface-strong: #fffdf4;
-  --sidebar: #e2dbc8;
-  --ink: #252a28;
-  --muted: #64685e;
-  --line: #c8c3b1;
-  --line-soft: #dcd6c3;
-  --accent: #2f554b;
-  --accent-contrast: #fffdf4;
-  --accent-soft: #dbe3d7;
-  --red: #8a3d42;
-  --red-soft: #f0ded5;
-  --gold: #8a6c31;
-  --shadow: 0 12px 30px #403b2710;
-  --radius: 6px;
+    "Baskerville", "Iowan Old Style", "Palatino Linotype", "Songti SC",
+    "Noto Serif SC", "STSong", serif;
+  --display:
+    "Bodoni 72", "Didot", "Baskerville", "Songti SC", "Noto Serif SC", serif;
+  --type:
+    "American Typewriter", "Courier New", "Songti SC", "Noto Serif SC",
+    monospace;
+  --paper: #e6dbc1;
+  --paper-texture: url("../assets/art/paper-tile.jpg");
+  --surface: #f1e7cf;
+  --surface-strong: #f8f0db;
+  --sidebar: #16140f;
+  --sidebar-ink: #e3d2a6;
+  --sidebar-muted: #9d8c66;
+  --ink: #2a2218;
+  --muted: #6f5f47;
+  --line: #b6a07a;
+  --line-soft: #d3c29f;
+  --accent: #34503f;
+  --accent-contrast: #f4e9cd;
+  --accent-soft: #d9d6b9;
+  --red: #8c2a22;
+  --red-soft: #ecd3c0;
+  --gold: #94702c;
+  --gold-bright: #c9a050;
+  --eldritch: #3f7d68;
+  --primary-bg: #2a261c;
+  --primary-ink: #efdcac;
+  --shadow: 0 10px 26px #3a2b1222;
+  --card-shadow: 2px 3px 0 #a48e6633, 0 8px 18px #3a2b1214;
+  --radius: 2px;
   color-scheme: light;
 }
 :root[data-theme="dark"] {
-  --paper: #17211f;
-  --surface: #202e29;
-  --surface-strong: #273730;
-  --sidebar: #121c19;
-  --ink: #e4e6da;
-  --muted: #b8c2b8;
-  --line: #4e6257;
-  --line-soft: #364a40;
-  --accent: #a7c5af;
-  --accent-contrast: #14271d;
-  --accent-soft: #314c3b;
-  --red: #e0a1a0;
-  --red-soft: #492d2e;
-  --gold: #cfb16f;
-  --shadow: 0 12px 30px #00000020;
+  --paper: #0d0f0c;
+  --paper-texture: url("../assets/art/dark-tile.jpg");
+  --surface: #191a15;
+  --surface-strong: #22231c;
+  --sidebar: #0a0b09;
+  --sidebar-ink: #e3d2a6;
+  --sidebar-muted: #8d7f60;
+  --ink: #e9dcbc;
+  --muted: #a8987a;
+  --line: #4c4434;
+  --line-soft: #312c22;
+  --accent: #c9a45c;
+  --accent-contrast: #15120b;
+  --accent-soft: #2e2a1c;
+  --red: #d9776a;
+  --red-soft: #3a1d19;
+  --gold: #c9a45c;
+  --gold-bright: #e6c47b;
+  --eldritch: #7fc4a6;
+  --primary-bg: #c9a45c;
+  --primary-ink: #17130b;
+  --shadow: 0 12px 30px #00000066;
+  --card-shadow: 0 0 0 1px #00000040, 0 10px 24px #00000050;
   color-scheme: dark;
 }
 * {
@@ -49,7 +72,8 @@
 body {
   margin: 0;
   min-width: 320px;
-  background: var(--paper);
+  background: var(--paper) var(--paper-texture) repeat;
+  background-size: 640px;
   color: var(--ink);
   font-size: 14px;
   line-height: 1.6;

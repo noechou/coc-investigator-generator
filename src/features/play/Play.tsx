@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import type { Character, PlayEvent, ResourceKey } from "../../domain/types";
 import { ATTRIBUTE_KEYS, BACKSTORY_KEYS } from "../../domain/types";
 import { ATTRIBUTE_LABELS, BACKSTORY_LABELS } from "../../domain/catalogs";
@@ -11,6 +12,7 @@ import {
 } from "../../domain/rules";
 import { rollCheck, rollDice } from "../../domain/checks";
 import { Icon, Modal, Portrait, formatTime } from "../../components/ui";
+import { ART, EMBLEMS } from "../../components/art";
 
 type Props = {
   character: Character;
@@ -25,6 +27,36 @@ const RESOURCES: [ResourceKey, string, string][] = [
   ["san", "理智", "book"],
   ["luck", "幸运", "dice"],
 ];
+const OUTCOME_TONE: Record<string, string> = {
+  大成功: "crit",
+  极难成功: "extreme",
+  困难成功: "hard",
+  普通成功: "regular",
+  失败: "fail",
+  大失败: "fumble",
+};
+export const outcomeTone = (outcome?: string) =>
+  (outcome && OUTCOME_TONE[outcome]) || "neutral";
+const SANITY_LABELS: Record<string, string> = {
+  steady: "心神安定",
+  uneasy: "隐隐不安",
+  shaken: "心神动摇",
+  fraying: "濒临崩溃",
+  lost: "理智尽失",
+};
+// Starting SAN equals POW, so the descent is measured against that, not 99.
+function sanityLevel(c: Character, sanMax: number) {
+  const start = Math.max(
+    1,
+    Math.min(sanMax, c.creationAttrs?.pow || c.attrs.pow || 1),
+  );
+  const ratio = c.resources.san / start;
+  if (c.resources.san <= 0) return "lost";
+  if (ratio < 0.25) return "fraying";
+  if (ratio < 0.5) return "shaken";
+  if (ratio < 0.8) return "uneasy";
+  return "steady";
+}
 export default function Play({
   character: c,
   onChange,
@@ -46,6 +78,20 @@ export default function Play({
     detail: string;
   } | null>(null);
   const derived = getDerived(c);
+  const sanity = sanityLevel(c, derived.sanMax);
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.sanity = sanity;
+    return () => {
+      delete root.dataset.sanity;
+    };
+  }, [sanity]);
+  const resourceMax: Record<ResourceKey, number> = {
+    hp: derived.hp,
+    mp: derived.mp,
+    san: derived.sanMax,
+    luck: 99,
+  };
   const pinned = c.skills.filter((s) => s.pinned);
   const frequent = pinned.length
     ? pinned
@@ -132,13 +178,23 @@ export default function Play({
   const last = c.logs[0];
   return (
     <div className="play-layout">
+      <div className="sanity-veil" aria-hidden="true" />
       <div className="play-primary">
         <section className="resource-strip" aria-label="当前状态">
-          {RESOURCES.map(([key, label, icon]) => (
-            <div key={key} className={`resource-item resource-${key}`}>
+          {RESOURCES.map(([key, label]) => (
+            <div
+              key={key}
+              className={`resource-item resource-${key}`}
+              style={
+                {
+                  "--fill": `${Math.min(100, (c.resources[key] / Math.max(1, resourceMax[key])) * 100)}%`,
+                } as CSSProperties
+              }
+            >
+              <img className="resource-emblem" src={EMBLEMS[key]} alt="" />
               <span className="resource-label">
-                <Icon name={icon} size={16} />
                 {label}
+                <small>{key.toUpperCase()}</small>
               </span>
               <div className="resource-number">
                 <button
@@ -147,7 +203,7 @@ export default function Play({
                   disabled={c.resources[key] <= 0}
                   onClick={() => resourceChange(key, c.resources[key] - 1)}
                 >
-                  −
+                  <span aria-hidden="true">−</span>
                 </button>
                 <button
                   className="resource-value"
@@ -173,9 +229,17 @@ export default function Play({
                   aria-label={`增加${label}`}
                   onClick={() => resourceChange(key, c.resources[key] + 1)}
                 >
-                  +
+                  <span aria-hidden="true">+</span>
                 </button>
               </div>
+              <span className="resource-meter" aria-hidden="true">
+                <i />
+              </span>
+              {key === "san" && (
+                <span className={`sanity-state sanity-${sanity}`}>
+                  {SANITY_LABELS[sanity]}
+                </span>
+              )}
               {(key === "san" || key === "luck") && (
                 <button
                   className="resource-check"
@@ -224,8 +288,25 @@ export default function Play({
           {tab === "character" && (
             <>
               <section className="character-overview">
-                <Portrait name={c.name} src={c.portrait} large />
-                <div>
+                <div className="overview-portrait">
+                  <img
+                    className="overview-clip"
+                    src={ART.paperclip}
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <Portrait name={c.name} src={c.portrait} large />
+                </div>
+                <img
+                  className="overview-seal"
+                  src={ART.waxSeal}
+                  alt=""
+                  aria-hidden="true"
+                />
+                <div className="overview-copy">
+                  <span className="overview-file">
+                    档案 No.{c.id.slice(-6).toUpperCase()} · 机密
+                  </span>
                   <span className="overview-occupation">
                     {occupationName(c)} / {c.age} 岁 / {c.era}
                   </span>
@@ -494,9 +575,7 @@ export default function Play({
                       <div>
                         <span>{formatTime(log.at)}</span>
                         <h3>{log.title}</h3>
-                        <strong
-                          className={log.outcome === "大失败" ? "danger" : ""}
-                        >
+                        <strong className={`tone-${outcomeTone(log.outcome)}`}>
                           {log.result !== undefined ? `${log.result} · ` : ""}
                           {log.outcome || ""}
                         </strong>
@@ -551,9 +630,15 @@ export default function Play({
           </label>
           <div
             key={last?.id ?? "no-roll"}
-            className={`latest-roll ${last ? "roll-reveal" : ""} ${last?.outcome === "大失败" ? "roll-fumble" : ""}`}
+            className={`latest-roll ${last ? "roll-reveal" : ""} tone-${outcomeTone(last?.outcome)}`}
             aria-live="polite"
           >
+            <img
+              className="roll-sigil"
+              src={ART.sigil}
+              alt=""
+              aria-hidden="true"
+            />
             {last ? (
               <>
                 <span>{last.title}</span>
@@ -616,7 +701,10 @@ export default function Play({
             </button>
           </div>
           {c.logs.slice(0, 5).map((log) => (
-            <div key={log.id} className="mini-log">
+            <div
+              key={log.id}
+              className={`mini-log tone-${outcomeTone(log.outcome)}`}
+            >
               <Icon
                 name={log.kind === "resource" ? "heart" : "dice"}
                 size={15}
@@ -636,8 +724,14 @@ export default function Play({
       {checkResult && (
         <Modal title={checkResult.title} onClose={() => setCheckResult(null)}>
           <div
-            className={`latest-roll roll-reveal ${checkResult.outcome === "大失败" ? "roll-fumble" : ""}`}
+            className={`latest-roll roll-reveal tone-${outcomeTone(checkResult.outcome)}`}
           >
+            <img
+              className="roll-sigil"
+              src={ART.sigil}
+              alt=""
+              aria-hidden="true"
+            />
             <span>检定结果</span>
             <strong>{checkResult.roll}</strong>
             <b>{checkResult.outcome}</b>

@@ -81,24 +81,22 @@ export default function Library({
           </button>
         </div>
         <div className="archive-scene">
-          <picture>
-            <source media="(max-width: 580px)" srcSet={ART.streetSmall} />
-            <img
-              src={ART.street}
-              alt="雨夜的阿卡姆街道，钟楼与窗灯映在湿润的石板路上"
-              width={1440}
-              height={810}
-              fetchPriority="high"
-            />
-          </picture>
+          <img
+            src={ART.libraryHero}
+            alt="深夜的密斯卡托尼克大学禁书档案室，台灯照着一份盖了红章的卷宗"
+            width={1920}
+            height={1280}
+            fetchPriority="high"
+          />
           <span className="archive-scene-rain" aria-hidden="true" />
           <div className="archive-scene-caption">
-            <span>阿卡姆，入夜之后</span>
-            <small>窗外的雨还没有停。</small>
+            <span>密斯卡托尼克大学 · 限阅书库</span>
+            <small>有些卷宗，翻开后就合不上了。</small>
           </div>
         </div>
         {latest ? (
           <button className="recent-dossier" onClick={() => onOpen(latest.id)}>
+            <img className="dossier-tape" src={ART.tape} alt="" />
             <div className="recent-meta">
               <span>继续上次调查</span>
               <span>{formatDate(latest.updatedAt)}</span>
@@ -244,7 +242,7 @@ export default function Library({
         </div>
       ) : (
         <div className="empty-state">
-          <Icon name={query ? "search" : "folder"} size={38} />
+          <img className="empty-art" src={ART.emptyTome} alt="" />
           <h2>
             {query
               ? "没有找到这份档案"
@@ -269,6 +267,7 @@ export default function Library({
           </div>
         </div>
       )}
+      <img className="ornament-divider" src={ART.divider} alt="" />
       <footer className="library-footer">
         <p>
           <Icon name="archive" size={16} />
